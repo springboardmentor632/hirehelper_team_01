@@ -2,9 +2,9 @@
   "name": "hirehelper_team_01",
   "version": "1.0.0",
   "description": "",
-  "main": "backend/server.js",
+  "main": "backend/index.js",
   "scripts": {
-    "start": "node backend/server.js",
+    "start": "node backend/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
