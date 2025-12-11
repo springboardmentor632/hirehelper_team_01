@@ -1,21 +1,12 @@
-const express = require("express");
-const cors = require("cors");
-require("dotenv").config();
-const connectDB = require("./src/config/db");
+import express from "express";
+import "./db.js"; 
 
 const app = express();
-
-
-app.use(cors());
 app.use(express.json());
 
-
-connectDB();
-
-
-app.use("/api/auth", require("./src/routes/authRoutes"));
-
-
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
+app.get("/", (req, res) => {
+  res.send("Backend is running and connected to MongoDB!");
 });
+
+const PORT = 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

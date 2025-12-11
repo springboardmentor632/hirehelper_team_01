@@ -1,0 +1,26 @@
+{
+  "name": "hirehelper_team_01",
+  "version": "1.0.0",
+  "description": "",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/springboardmentor632/hirehelper_team_01.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/springboardmentor632/hirehelper_team_01/issues"
+  },
+  "homepage": "https://github.com/springboardmentor632/hirehelper_team_01#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "mongoose": "^9.0.1"
+  }
+}

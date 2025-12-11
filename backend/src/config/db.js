@@ -1,13 +1,8 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URL);
-    console.log("MongoDB connected");
-  } catch (err) {
-    console.error("Database connection failed:", err);
-    process.exit(1);
-  }
-};
+const uri = "mongodb+srv://teamUser:Team1@cluster0.ku3vknl.mongodb.net/hirehelperDB?retryWrites=true&w=majority";
 
-module.exports = connectDB;
+
+mongoose.connect(uri)
+  .then(() => console.log("MongoDB Connected Successfully"))
+  .catch(err => console.log("MongoDB Error:", err));
