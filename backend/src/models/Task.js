@@ -5,14 +5,14 @@ const taskSchema = new mongoose.Schema(
   {
     id: {
       type: String,
-      default: uuidv4,     
+      default: uuidv4,
       unique: true,
     },
 
     user_id: {
-      type: String,        
+      type: String,
       required: true,
-      ref: "User",         
+      ref: "User",
     },
 
     title: {
@@ -41,9 +41,13 @@ const taskSchema = new mongoose.Schema(
     },
 
     status: {
+      type: Number, 
+      required: true,
+    },
+
+    category: {
       type: String,
-      enum: ["pending", "active", "completed"],
-      default: "pending",
+      default: "",
     },
 
     picture: {
