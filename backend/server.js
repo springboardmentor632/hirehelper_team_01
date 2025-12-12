@@ -1,5 +1,7 @@
-import express from "express";
-import "./src/config/db.js";
+// import express from "express";
+// import "./src/config/db.js";
+require("./src/config/db");
+const express = require("express");
  
 
 const app = express();
