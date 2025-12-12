@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 // Assuming the logo file is at src/assets/logo.png relative to the component
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.png'; 
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -18,14 +18,15 @@ const Login = () => {
         <div className="min-h-screen flex items-center justify-center bg-bg-app p-4 font-sans">
 
             {/* Main Content Area (Limited Width) */}
-            <div className="flex max-w-5xl w-full">
+            <div className="flex flex-col lg:flex-row max-w-5xl w-full items-center lg:items-center">
 
                 {/* Left Panel: Branding and Description (Hidden on small screens) */}
                 <div className="hidden lg:flex flex-col flex-1 justify-center pr-10">
 
-                    {/* Logo Display */}
-                    <div className="w-48 h-48 bg-bg-app flex items-center justify-center mb-4 rounded-full">
-                        <img src={logo} alt="HireHelper Logo" className="w-full h-full bg-bg-app object-contain p-4" />
+                    {/* Logo Display - NO BORDER */}
+                    {/* The container is implicitly transparent (inheriting bg-bg-app) */}
+                    <div className="w-48 h-48 flex items-center justify-center mb-4 rounded-full">
+                        <img src={logo} alt="HireHelper Logo" className="w-full h-full object-contain p-4" />
                     </div>
 
                     <h1 className="text-[3.5rem] font-bold text-action-link justify-center mb-2">
@@ -37,15 +38,16 @@ const Login = () => {
                     </p>
                 </div>
 
-                {/* --- Start: New Wrapper for Right Panel + Help Section --- */}
-                <div className="flex flex-col flex-1 max-w-md lg:max-w-none w-full items-center">
+                {/* --- Start: Wrapper for Right Panel + Help Section --- */}
+                <div className="flex flex-col w-full max-w-md lg:max-w-none items-center lg:flex-1">
 
                     {/* Right Panel: Login Form Card (bg-highlight and card shadow) */}
                     <div className="bg-bg-highlight p-8 md:p-10 rounded-lg border-[2px] border-action-accept shadow-card flex flex-col items-center w-full max-w-md">
 
-                        {/* Mobile Logo/Branding (Added to match the provided structure) */}
+                        {/* Mobile Logo/Branding */}
                         <div className="lg:hidden flex flex-col items-center mb-6">
-                            <div className="w-24 h-24 bg-bg-surface rounded-md border-[3px] border-brand-primary mb-2">
+                            {/* FIX: Removed border-[3px] border-brand-primary classes */}
+                            <div className="w-24 h-24 rounded-md mb-2">
                                 <img src={logo} alt="HireHelper Logo" className="w-full h-full object-contain p-2" />
                             </div>
                             <h1 className="text-h1 font-bold text-brand-primary">HireHelper</h1>
@@ -77,15 +79,14 @@ const Login = () => {
                                 Log In
                             </button>
 
-                            {/* Forgotten Password link (action-link) */}
+                            {/* Forgotten Password link */}
                             <a href="#" className="block text-center text-action-link text-sm mb-6 hover:underline">
                                 Forgotten password?
                             </a>
 
-                            {/* Create Account Button (Reduced Width & Centered) */}
-                            {/* Using max-w-[280px] to make it narrower than w-full */}
+                            {/* Create Account Link (Secondary Action) */}
                             <Link
-                                to="/signup" // Sets the destination URL for the link
+                                to="/signup" 
                                 className="w-full max-w-[280px] py-4 bg-action-accept text-action-decline font-bold text-base rounded-md transition hover:bg-opacity-80 mx-auto block text-center"
                             >
                                 Create New HireHelper Account
@@ -94,7 +95,7 @@ const Login = () => {
                         </form>
                     </div>
 
-                    {/* Help/Learn More Section - MOVED OUTSIDE THE CARD */}
+                    {/* Help/Learn More Section - OUTSIDE THE CARD */}
                     <div className="mt-4 text-sm text-text-secondary text-center">
                         <span>Need help?</span>
                         <a href="#" className="text-action-accept font-semibold ml-1 hover:underline">
@@ -103,7 +104,7 @@ const Login = () => {
                     </div>
 
                 </div>
-                {/* --- End: New Wrapper for Right Panel + Help Section --- */}
+                {/* --- End: Wrapper for Right Panel + Help Section --- */}
 
             </div>
         </div>

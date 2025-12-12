@@ -32,6 +32,22 @@ export default {
         semibold: HireHelperTheme.typography.fontWeight.semibold,
         regular: HireHelperTheme.typography.fontWeight.regular,
       },
+
+      keyframes: {
+                // Defines the movement of the sliding bar
+                'slide-progress': {
+                    // Starts the bar 100% off the left edge
+                    '0%': { transform: 'translateX(-100%)' },
+                    // Midway point, moves the bar fully across the container (400% is safe for a 25% width bar)
+                    '50%': { transform: 'translateX(400%)' }, 
+                    // Returns to the start to loop seamlessly
+                    '100%': { transform: 'translateX(-100%)' },
+                }
+            },
+            animation: {
+                // Applies the keyframes: 2s duration, linear speed, infinite repetition
+                'slide-progress': 'slide-progress 2s linear infinite',
+            }
     },
   },
 
