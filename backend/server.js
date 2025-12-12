@@ -1,5 +1,6 @@
 // import express from "express";
 // import "./src/config/db.js";
+require("dotenv").config()
 require("./src/config/db");
 const express = require("express");
  

@@ -1,8 +1,12 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
-let otpStore = {}; // Stores OTP for each email temporarily
+// let otpStore = {};  Stores OTP for each email temporarily
+
+const OTP_TTL_MS = parseInt("300000", 10); 
 
 exports.registerUser = async (req, res) => {
   try {
