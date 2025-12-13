@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const { v4: uuidv4 } = require("uuid");
+import mongoose from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 
 const userSchema = new mongoose.Schema(
   {
@@ -33,8 +33,18 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    otp: {
+      type: Number,
+      default: null,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    }
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
+
+export default User;   //ADD THIS
