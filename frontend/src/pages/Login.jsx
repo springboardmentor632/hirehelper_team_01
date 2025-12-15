@@ -24,7 +24,6 @@ const Login = () => {
                 <div className="hidden lg:flex flex-col flex-1 justify-center pr-10">
 
                     {/* Logo Display - NO BORDER */}
-                    {/* The container is implicitly transparent (inheriting bg-bg-app) */}
                     <div className="w-48 h-48 flex items-center justify-center mb-4 rounded-full">
                         <img src={logo} alt="HireHelper Logo" className="w-full h-full object-contain p-4" />
                     </div>
@@ -50,7 +49,8 @@ const Login = () => {
                             <div className="w-24 h-24 rounded-md mb-2">
                                 <img src={logo} alt="HireHelper Logo" className="w-full h-full object-contain p-2" />
                             </div>
-                            <h1 className="text-h1 font-bold text-brand-primary">HireHelper</h1>
+                            {/* FIX APPLIED HERE: Changed text-brand-primary to text-action-link */}
+                            <h1 className="text-h1 font-bold text-action-link">HireHelper</h1> 
                         </div>
 
                         <form className="w-full max-w-sm" onSubmit={handleLogin}>

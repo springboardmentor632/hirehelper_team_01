@@ -56,15 +56,14 @@ const Signup = () => {
                         <div className="w-24 h-24 rounded-full mb-2">
                             <img src={logo} alt="HireHelper Logo" className="w-full h-full object-contain p-2" />
                         </div>
-                        <h1 className="text-h1 font-bold text-brand-primary">HireHelper</h1>
+                        {/* FIX APPLIED HERE: Changed text-brand-primary to text-action-link */}
+                        <h1 className="text-h1 font-bold text-action-link">HireHelper</h1>
                     </div>
                     
                     {/* Form container: W-FULL ensures inputs align perfectly with card padding */}
                     <form className="w-full" onSubmit={handleSignup}> 
                         
                         {/* First Name & Last Name (Responsive Collapse at LG) */}
-                        {/* Below LG: stacks vertically (flex-col) with vertical space (space-y-3). 
-                            At LG and above: side-by-side (lg:flex-row) with horizontal space (lg:space-x-3). */}
                         <div className="flex flex-col lg:flex-row space-y-3 lg:space-y-0 space-x-0 lg:space-x-3 mb-3 w-full"> 
                             <input
                                 type="text"
