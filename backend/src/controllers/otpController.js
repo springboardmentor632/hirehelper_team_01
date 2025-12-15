@@ -5,61 +5,55 @@ import {sendOtp} from "../utils/sendOtp.js"
 import {signupOTPStore,resetOTPStore} from "../utils/otpStore.js";
 
 // send otp after signup 
-
 export const sendSignupOtp = async (req,res) => {
-     const {email_id} = req.body;
-     const user = await User.findOne({email_id});
+     const {email_id, email} = req.body;
+     const normalizedEmail = (email_id || email).trim().toLowerCase();
+
+     const user = await User.findOne({ email_id: normalizedEmail });
      if(!user) return res.status(404).json({message:"user not found"});
 
-    //  if the user is existing we can now sent the otp to their mail
+     const otp = generateOTP();
 
-    const otp = generateOTP();
-
-    signupOTPStore[email_id] = {
+     signupOTPStore[normalizedEmail] = {
         otp,
-        expiresAt:Date.now() + 5 * 60 * 1000
-    };
+        expiresAt: Date.now() + 5 * 60 * 1000
+     };
 
-    await sendOtp(email_id,otp,"Account Verification");
+     await sendOtp(normalizedEmail, otp, "Account Verification");
 
-    res.json({message:"otp send to the mail"});
-
-
-
-
-
+     res.json({message:"otp sent to the mail", otp});
 }
 
 // verify the signup otp
 export const verifySignupOtp = async (req,res) => {
-        const {email_id,otp} = req.body;
-        
-        // checking the email record was existing in the store 
-        const record = signupOTPStore[email_id];
-        if(!record) return res.status(400).json({message:"otp not found check your mail and try again"});
-         
-        // checking was otp was expired or not
-        if(record.expiresAt < Date.now()){
-             return res.status(400).json({message:"otp expired"});
-        }
+    const { email_id, email, otp } = req.body;
 
-        // checking the otp was correct or not
-          if (record.otp !== otp){
-            return res.status(400).json({ message: "Invalid OTP" });
-          }
-       
-       await User.updateOne({ email_id }, { isVerified: true });
-         delete signupOTPStore[email_id];
+    const normalizedEmail = (email_id || email || "").trim().toLowerCase();
+    if (!normalizedEmail) {
+      return res.status(400).json({ message: "email_id or email is required" });
+    }
 
-        res.json({ message: "OTP verified. User registered successfully." });
+    const record = signupOTPStore[normalizedEmail];
+    if(!record) return res.status(400).json({message:"otp not found check your mail and try again"});
+    
+    if(record.expiresAt < Date.now()){
+      return res.status(400).json({message:"otp expired"});
+    }
 
-}      
+    if (String(record.otp) !== String(otp)){
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+
+    await User.updateOne({ email_id: normalizedEmail }, { isVerified: true });
+    delete signupOTPStore[normalizedEmail];
+
+    return res.json({ message: "OTP verified. User registered successfully." });
+}
 
 //   FORGOT PASSWORD – SEND OTP
 
 export const forgotPassword = async (req, res) => {
   const { email_id } = req.body;
-
   const user = await User.findOne({ email_id });
   if (!user) return res.status(404).json({ message: "User not found" });
 
@@ -70,7 +64,7 @@ export const forgotPassword = async (req, res) => {
     expiresAt: Date.now() + 5 * 60 * 1000
   };
 
-  await sendOTP(email_id, otp, "Password Reset");
+  await sendOtp(email_id, otp, "Password Reset");
 
   res.json({ message: "OTP sent for password reset" });
 };

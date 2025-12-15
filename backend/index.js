@@ -1,10 +1,10 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import "./src/config/db.js";  // MongoDB connection file
-// import otpRoutes from "./src/routes/otpRoutes.js";
 import otpRoutes from "./src/routes/otpRoutes.js"
 import authRoutes from "./src/routes/authRoutes.js";
-
-
 
 const app = express();
 app.use(express.json());

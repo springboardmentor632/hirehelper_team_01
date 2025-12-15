@@ -1,8 +1,15 @@
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+dotenv.config();
 
-const uri = "mongodb+srv://teamUser:Team1@cluster0.ku3vknl.mongodb.net/hirehelperDB?retryWrites=true&w=majority";
+const uri = process.env.MONGO_URI;
+const dbName = process.env.MONGO_DB || "hirehelperDB";
 
-
-mongoose.connect(uri)
-  .then(() => console.log("MongoDB Connected Successfully"))
-  .catch(err => console.log("MongoDB Error:", err));
+if (!uri) {
+  console.error("MONGO_URI is not set in environment");
+} else {
+  mongoose
+    .connect(uri, { dbName })
+    .then(() => console.log(`MongoDB Connected Successfully (db: ${dbName})`))
+    .catch(err => console.log("MongoDB Error:", err));
+}

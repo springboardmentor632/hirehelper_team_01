@@ -1,14 +1,21 @@
 import nodemailer from "nodemailer";
 
 export const sendOtp = async (email, otp, purpose = "verification") => {
+  if (!process.env.MAIL_USER || !process.env.MAIL_PASS) {
+    throw new Error("MAIL_USER or MAIL_PASS is not configured");
+  }
+
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
     auth: {
       user: process.env.MAIL_USER,
       pass: process.env.MAIL_PASS
     }
   });
 
+  await transporter.verify(); // checks credentials/connectivity before sending
   await transporter.sendMail({
     from: process.env.MAIL_USER,
     to: email,
