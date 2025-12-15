@@ -1,20 +1,18 @@
 import nodemailer from "nodemailer";
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+export const sendOtp = async (email, otp, purpose = "verification") => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.MAIL_USER,
+      pass: process.env.MAIL_PASS
+    }
+  });
 
-const sendOtp = async (email, otp) => {
   await transporter.sendMail({
-    from: process.env.EMAIL_USER,
+    from: process.env.MAIL_USER,
     to: email,
-    subject: "Your OTP Code",
-    text: `Your OTP is ${otp}`,
+    subject: `Your OTP for ${purpose}`,
+    text: `Your OTP is ${otp}. It is valid for 5 minutes.`
   });
 };
-
-export default sendOtp;   //IMPORTANT
