@@ -1,30 +1,59 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { generateOTP } from "../utils/otp.js";
+import { signupOTPStore } from "../utils/otpStore.js";
+import { sendOtp } from "../utils/sendOtp.js";
 
 export const registerUser = async (req, res) => {
   try {
     const { first_name, last_name, email_id, phone_number, password } = req.body;
 
-    
-    const exists = await User.findOne({ email_id });
+    const normalizedEmail = email_id.trim().toLowerCase();
+
+    const exists = await User.findOne({ email_id: normalizedEmail });
     if (exists) {
+      if (!exists.isVerified) {
+        const otp = generateOTP();
+        signupOTPStore[normalizedEmail] = {
+          otp,
+          expiresAt: Date.now() + 5 * 60 * 1000
+        };
+
+        await sendOtp(normalizedEmail, otp, "Account Verification");
+
+        return res.json({
+          message: "User already exists but not verified. OTP resent.",
+          otp
+        });
+      }
       return res.status(400).json({ message: "User already exists" });
     }
 
-    
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    
     await User.create({
       first_name,
       last_name,
-      email_id,
+      email_id: normalizedEmail,
       phone_number,
-      password: hashedPassword
+      password: hashedPassword,
+      isVerified: false
     });
 
-    res.json({ message: "User registered successfully." });
+    const otp = generateOTP();
+
+    signupOTPStore[normalizedEmail] = {
+      otp,
+      expiresAt: Date.now() + 5 * 60 * 1000
+    };
+
+    await sendOtp(normalizedEmail, otp, "Account Verification");
+
+    return res.json({
+      message: "OTP sent for verification",
+      otp
+    });
 
   } catch (err) {
     res.status(500).json({ error: err.message });

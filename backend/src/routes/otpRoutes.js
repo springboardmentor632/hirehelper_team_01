@@ -1,4 +1,3 @@
-// top-level imports and router
 import express from "express";
 import {
   sendSignupOtp,
