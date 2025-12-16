@@ -6,8 +6,8 @@ import {signupOTPStore,resetOTPStore} from "../utils/otpStore.js";
 
 // send otp after signup 
 export const sendSignupOtp = async (req,res) => {
-     const {email_id, email} = req.body;
-     const normalizedEmail = (email_id || email).trim().toLowerCase();
+     const {email_id} = req.body;
+     const normalizedEmail = email_id.trim().toLowerCase();
 
      const user = await User.findOne({ email_id: normalizedEmail });
      if(!user) return res.status(404).json({message:"user not found"});
@@ -26,11 +26,11 @@ export const sendSignupOtp = async (req,res) => {
 
 // verify the signup otp
 export const verifySignupOtp = async (req,res) => {
-    const { email_id, email, otp } = req.body;
+    const { email_id, otp } = req.body;
 
-    const normalizedEmail = (email_id || email || "").trim().toLowerCase();
+    const normalizedEmail = (email_id || "").trim().toLowerCase();
     if (!normalizedEmail) {
-      return res.status(400).json({ message: "email_id or email is required" });
+      return res.status(400).json({ message: "email_id is required" });
     }
 
     const record = signupOTPStore[normalizedEmail];
@@ -54,17 +54,18 @@ export const verifySignupOtp = async (req,res) => {
 
 export const forgotPassword = async (req, res) => {
   const { email_id } = req.body;
-  const user = await User.findOne({ email_id });
+  const normalizedEmail = email_id.trim().toLowerCase();
+  const user = await User.findOne({ email_id: normalizedEmail });
   if (!user) return res.status(404).json({ message: "User not found" });
 
   const otp = generateOTP();
 
-  resetOTPStore[email_id] = {
+  resetOTPStore[normalizedEmail] = {
     otp,
     expiresAt: Date.now() + 5 * 60 * 1000
   };
 
-  await sendOtp(email_id, otp, "Password Reset");
+  await sendOtp(normalizedEmail, otp, "Password Reset");
 
   res.json({ message: "OTP sent for password reset" });
 };
@@ -73,8 +74,9 @@ export const forgotPassword = async (req, res) => {
 //  RESET PASSWORD (OTP VERIFIED)
 export const resetPassword = async (req, res) => {
   const { email_id, otp, newPassword } = req.body;
+  const normalizedEmail = email_id.trim().toLowerCase();
 
-  const record = resetOTPStore[email_id];
+  const record = resetOTPStore[normalizedEmail];
   if (!record) return res.status(400).json({ message: "OTP not found" });
 
   if (record.expiresAt < Date.now())
@@ -84,13 +86,12 @@ export const resetPassword = async (req, res) => {
     return res.status(400).json({ message: "Invalid OTP" });
 
   const hashedPassword = await bcrypt.hash(newPassword, 10);
-  await User.updateOne({ email_id }, { password: hashedPassword });
+  await User.updateOne({ email_id: normalizedEmail }, { password: hashedPassword });
 
-  delete resetOTPStore[email_id];
+  delete resetOTPStore[normalizedEmail];
 
   res.json({ message: "Password changed successfully" });
 };
-
 
 
 
