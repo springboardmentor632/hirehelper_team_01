@@ -22,6 +22,7 @@ const Signup = () => {
     const handleSignup = (e) => {
         e.preventDefault();
         console.log('Signup attempted with:', formData);
+        window.location.replace("/otp");
     };
 
     return (
