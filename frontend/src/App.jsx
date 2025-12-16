@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 // Import your page components
 import Login from "./pages/Login";
-import Signup from "./pages/Signup"; 
+import Signup from "./pages/Signup";
 
 // Import the Loader component (Adjust path if needed)
 import Loader from './pages/Loader'; 
