@@ -1,6 +1,6 @@
 .feed {
   flex: 1;
-  padding: 30px;
+  padding: 40px;
   background: #C7F5A5;
 }
 
@@ -31,6 +31,6 @@
 
 .cards {
   display: flex;
-  gap: 20px;
+  gap: 30px;
   flex-wrap: wrap;
 }

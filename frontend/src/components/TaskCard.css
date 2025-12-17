@@ -2,7 +2,8 @@
   background: #f7fee7;
   border-radius: 15px;
   width: 100%;          /* full width of parent */
-  max-width: 240px;     /* optional max width */
+  max-width: 245px; 
+  height: 310px;    /* optional max width */
   box-shadow: 0 35px 40px rgba(0,0,0,0.12);
   overflow: hidden;
   display: flex;
