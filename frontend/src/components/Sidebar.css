@@ -40,7 +40,8 @@
 }
 
 .sidebar-nav a:hover,
-.sidebar-nav a.active {
+.sidebar-nav a.active
+  {
   background: #ffffff;
   color: #42B72A;
 }

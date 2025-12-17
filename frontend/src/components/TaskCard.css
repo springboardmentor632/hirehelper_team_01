@@ -87,3 +87,16 @@
   background: #a7f3d0;
   cursor: not-allowed;
 }
+.status {
+  margin-top: 10px;
+  font-weight: bold;
+}
+.status.pending {
+  color: #d97706;
+}
+.status.completed {
+  color: #16a34a;
+}
+.status.inprogress {
+  color: #2563eb;
+}       
