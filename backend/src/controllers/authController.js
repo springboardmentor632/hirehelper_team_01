@@ -23,8 +23,7 @@ export const registerUser = async (req, res) => {
         await sendOtp(normalizedEmail, otp, "Account Verification");
 
         return res.json({
-          message: "User already exists but not verified. OTP resent.",
-          otp
+          message: "User already exists but not verified. OTP resent to your email."
         });
       }
       return res.status(400).json({ message: "User already exists" });
@@ -51,8 +50,7 @@ export const registerUser = async (req, res) => {
     await sendOtp(normalizedEmail, otp, "Account Verification");
 
     return res.json({
-      message: "OTP sent for verification",
-      otp
+      message: "OTP sent to your email for account verification"
     });
 
   } catch (err) {
