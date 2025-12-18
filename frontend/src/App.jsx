@@ -3,7 +3,9 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 // Import your page components
 import Login from "./pages/Login";
-import Signup from "./pages/Signup"; 
+import Signup from "./pages/Signup";
+import OTPVerification from "./pages/OTPVerification";
+
 
 // Import the Loader component (Adjust path if needed)
 import Loader from './pages/Loader'; 
@@ -43,6 +45,8 @@ function App() {
                         
                         {/* Route for the signup page */}
                         <Route path="/signup" element={<Signup />} />
+
+                        <Route path="/otp" element={<OTPVerification />} />
                         
                         {/* Optional: Add a 404 Not Found route */}
                         <Route path="*" element={<div>404 Not Found</div>} />
