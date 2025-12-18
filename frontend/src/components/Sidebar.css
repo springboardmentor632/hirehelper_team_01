@@ -1,0 +1,118 @@
+/* ===== COMMON SIDEBAR STYLES ===== */
+.sidebar {
+  background: #D8FFBB;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+}
+
+/* Logo */
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.sidebar-logo img {
+  width: 38px;
+}
+
+.sidebar-logo h2 {
+  font-size: 20px;
+  color: #1877F2;
+}
+
+/* Navigation */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  text-decoration: none;
+  color: #14532d;
+  border-radius: 8px;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+  background: #ffffff;
+  color: #42B72A;
+}
+
+/* Profile */
+.sidebar-profile {
+  margin-top: auto;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  background: #16a34a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+/* ===== DESKTOP ===== */
+@media (min-width: 1024px) {
+  .sidebar {
+    width: 260px;  /* desktop width */
+  }
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 1023px) {
+  .sidebar {
+    width: 140px;   /* small but not collapsed */
+    padding: 10px;
+  }
+
+  /* Logo smaller but visible */
+  .sidebar-logo img {
+    width: 32px;
+  }
+
+  .sidebar-logo h2 {
+    font-size: 16px;
+    display: inline-block;  /* keep text visible */
+  }
+
+  /* Navigation links compact but readable */
+  .sidebar-nav a {
+    flex-direction: row;   /* keep icon + text side by side */
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .sidebar-nav a svg {
+    font-size: 18px;
+    margin-bottom: 0;
+  }
+
+  /* Profile smaller but visible */
+  .sidebar-profile {
+    flex-direction: row;
+    font-size: 10px;
+    align-items: center;
+  }
+
+  .avatar {
+    width: 30px;
+    height: 30px;
+  }
+}
