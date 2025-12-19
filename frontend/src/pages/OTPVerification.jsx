@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
 import logo from '../assets/logo.png'; // Ensure path is correct
+import { verifySignupOtp, resendSignupOtp } from '../utils/api';
+import { useNavigate } from 'react-router-dom';
 
 const VerifyEmail = () => {
     // Array to hold the 6-digit OTP code
@@ -24,11 +26,22 @@ const VerifyEmail = () => {
         }
     };
 
-    const handleVerify = (e) => {
+    const navigate = useNavigate();
+
+    const handleVerify = async (e) => {
         e.preventDefault();
         const code = otp.join("");
-        console.log("Verifying code:", code);
-        // Add your verification logic here
+        const email_id = localStorage.getItem('pendingEmail');
+        if (!email_id) return alert('No pending email found');
+        try {
+            await verifySignupOtp({ email_id, otp: code });
+            // on success, remove pending and navigate to login
+            localStorage.removeItem('pendingEmail');
+            alert('Email verified — you can now log in.');
+            navigate('/login');
+        } catch (err) {
+            alert(err.message || 'OTP verification failed');
+        }
     };
 
     return (
@@ -77,7 +90,20 @@ const VerifyEmail = () => {
                     {/* Resend Link */}
                     <p className="mt-6 text-sm text-text-secondary">
                         Didn't receive the OTP? 
-                        <button type="button" className="text-action-link font-semibold ml-1 hover:underline">
+                        <button
+                            type="button"
+                            className="text-action-link font-semibold ml-1 hover:underline"
+                            onClick={async () => {
+                                const email_id = localStorage.getItem('pendingEmail');
+                                if (!email_id) return alert('No pending email found');
+                                try {
+                                    await resendSignupOtp(email_id);
+                                    alert('OTP resent');
+                                } catch (err) {
+                                    alert(err.message || 'Resend failed');
+                                }
+                            }}
+                        >
                             Resend
                         </button>
                     </p>

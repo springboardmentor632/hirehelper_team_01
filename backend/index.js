@@ -5,8 +5,9 @@ import express from "express";
 import "./src/config/db.js";  // MongoDB connection file
 import otpRoutes from "./src/routes/otpRoutes.js"
 import authRoutes from "./src/routes/authRoutes.js";
-
+import cors from "cors";
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 //Use the authentication routes

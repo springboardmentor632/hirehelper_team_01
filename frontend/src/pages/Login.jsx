@@ -1,16 +1,26 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { loginUser } from '../utils/api';
 // Assuming the logo file is at src/assets/logo.png relative to the component
 import logo from '../assets/logo.png'; 
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        // Here you would use email and password state to call an API
-        console.log('Login attempted with:', { email, password });
+        try {
+            const payload = { email_id: email.trim().toLowerCase(), password };
+            const res = await loginUser(payload);
+            // store token and user
+            if (res.token) localStorage.setItem('token', res.token);
+            if (res.user) localStorage.setItem('user', JSON.stringify(res.user));
+            navigate('/feed');
+        } catch (err) {
+            alert(err.message || 'Login failed');
+        }
     };
 
     return (
