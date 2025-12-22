@@ -41,8 +41,8 @@ const MyTasks = () => {
 
             <main className="flex-1 p-6 lg:p-10 overflow-y-auto">
                 <header className="mb-8">
-                    <h1 className="text-2xl font-bold text-text-primary mb-1">Feed</h1>
-                    <p className="text-text-secondary">Find tasks you can help with.</p>
+                    <h1 className="text-2xl font-bold text-text-primary mb-1">MyTask</h1>
+                    <p className="text-text-secondary">Manage your posted tasks.</p>
                 </header>
 
                 
