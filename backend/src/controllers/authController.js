@@ -23,8 +23,7 @@ export const registerUser = async (req, res) => {
         await sendOtp(normalizedEmail, otp, "Account Verification");
 
         return res.json({
-          message: "User already exists but not verified. OTP resent.",
-          otp
+          message: "User already exists but not verified. OTP resent."
         });
       }
       return res.status(400).json({ message: "User already exists" });
@@ -51,8 +50,7 @@ export const registerUser = async (req, res) => {
     await sendOtp(normalizedEmail, otp, "Account Verification");
 
     return res.json({
-      message: "OTP sent for verification",
-      otp
+      message: "OTP sent for verification"
     });
 
   } catch (err) {
@@ -77,7 +75,11 @@ export const loginUser = async (req, res) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ id: user.id, email: user.email_id }, process.env.JWT_SECRET || "defaultsecret", { expiresIn: "1h" });
+    const token = jwt.sign(
+      { userId: user._id.toString(), email: user.email_id },
+      process.env.JWT_SECRET || "defaultsecret",
+      { expiresIn: "1h" }
+    );
 
     res.json({
       message: "Login successful",
