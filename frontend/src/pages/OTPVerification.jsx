@@ -1,12 +1,20 @@
 import React, { useState, useRef } from 'react';
-import logo from '../assets/logo.png'; // Ensure path is correct
+import logo from '../assets/logo.png';
 import { verifySignupOtp, resendSignupOtp } from '../utils/api';
-import { useNavigate } from 'react-router-dom';
+import { resetPassword } from '../utils/api';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const VerifyEmail = () => {
+    const [searchParams] = useSearchParams();
+    const type = searchParams.get('type') || 'signup'; // 'signup' or 'reset'
+    const email = searchParams.get('email') || '';
+    
     // Array to hold the 6-digit OTP code
     const [otp, setOtp] = useState(new Array(6).fill(""));
     const inputRefs = useRef([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
 
     const handleChange = (element, index) => {
         if (isNaN(element.value)) return false;
@@ -26,23 +34,89 @@ const VerifyEmail = () => {
         }
     };
 
-    const navigate = useNavigate();
-
     const handleVerify = async (e) => {
         e.preventDefault();
+        setError('');
         const code = otp.join("");
-        const email_id = localStorage.getItem('pendingEmail');
-        if (!email_id) return alert('No pending email found');
+
+        if (code.length < 6) {
+            setError('Please enter the complete OTP');
+            return;
+        }
+
         try {
-            await verifySignupOtp({ email_id, otp: code });
-            // on success, remove pending and navigate to login
-            localStorage.removeItem('pendingEmail');
-            alert('Email verified — you can now log in.');
-            navigate('/login');
+            setLoading(true);
+            
+            if (type === 'reset') {
+                // Password reset OTP verification
+                const newPassword = localStorage.getItem('resetPassword');
+                const resetEmail = localStorage.getItem('resetEmail') || email;
+                
+                if (!newPassword) {
+                    setError('Password not found. Please try again.');
+                    return;
+                }
+
+                await resetPassword({ email_id: resetEmail, otp: code, newPassword });
+                
+                // Clean up storage
+                localStorage.removeItem('resetPassword');
+                localStorage.removeItem('resetEmail');
+                
+                alert('Password changed successfully! Please login with your new password.');
+                navigate('/login');
+            } else {
+                // Signup OTP verification
+                const pendingEmail = localStorage.getItem('pendingEmail') || email;
+                
+                if (!pendingEmail) {
+                    setError('No email found. Please try again.');
+                    return;
+                }
+
+                await verifySignupOtp({ email_id: pendingEmail, otp: code });
+                localStorage.removeItem('pendingEmail');
+                alert('Email verified — you can now log in.');
+                navigate('/login');
+            }
         } catch (err) {
-            alert(err.message || 'OTP verification failed');
+            setError(err.message || 'OTP verification failed');
+        } finally {
+            setLoading(false);
         }
     };
+
+    const handleResend = async () => {
+        setError('');
+        const pendingEmail = localStorage.getItem('pendingEmail') || email;
+        
+        if (!pendingEmail) {
+            setError('No email found. Please try again.');
+            return;
+        }
+
+        try {
+            setLoading(true);
+            if (type === 'reset') {
+                // For reset, call forgot password again
+                const { forgotPassword } = await import('../utils/api');
+                await forgotPassword(pendingEmail);
+            } else {
+                // For signup
+                await resendSignupOtp(pendingEmail);
+            }
+            alert('OTP resent');
+        } catch (err) {
+            setError(err.message || 'Resend failed');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const heading = type === 'reset' ? 'Verify OTP' : 'Verify Your Email';
+    const description = type === 'reset' 
+        ? `We've sent a 6-digit OTP to ${email || 'your email'}.` 
+        : 'We\'ve sent a 6-digit code to your email.';
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-bg-app p-4 font-sans">
@@ -55,10 +129,14 @@ const VerifyEmail = () => {
                 </div>
 
                 {/* Text Content */}
-                <h1 className="text-2xl font-bold text-text-primary mb-2">Verify Your Email</h1>
-                <p className="text-text-secondary text-center mb-8">
-                    We've sent a 6-digit code to your email.
-                </p>
+                <h1 className="text-2xl font-bold text-text-primary mb-2">{heading}</h1>
+                <p className="text-text-secondary text-center mb-8">{description}</p>
+
+                {error && (
+                    <div className="w-full mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
+                        {error}
+                    </div>
+                )}
 
                 {/* Verification Form */}
                 <form onSubmit={handleVerify} className="w-full flex flex-col items-center">
@@ -82,9 +160,10 @@ const VerifyEmail = () => {
                     {/* Verify Button */}
                     <button
                         type="submit"
-                        className="w-full py-3 bg-action-accept text-action-decline font-bold text-lg rounded-md transition hover:opacity-90 shadow-md"
+                        disabled={loading}
+                        className="w-full py-3 bg-action-accept text-action-decline font-bold text-lg rounded-md transition hover:opacity-90 shadow-md disabled:opacity-50"
                     >
-                        Verify Code
+                        {loading ? 'Verifying...' : 'Verify Code'}
                     </button>
 
                     {/* Resend Link */}
@@ -92,17 +171,9 @@ const VerifyEmail = () => {
                         Didn't receive the OTP? 
                         <button
                             type="button"
-                            className="text-action-link font-semibold ml-1 hover:underline"
-                            onClick={async () => {
-                                const email_id = localStorage.getItem('pendingEmail');
-                                if (!email_id) return alert('No pending email found');
-                                try {
-                                    await resendSignupOtp(email_id);
-                                    alert('OTP resent');
-                                } catch (err) {
-                                    alert(err.message || 'Resend failed');
-                                }
-                            }}
+                            disabled={loading}
+                            className="text-action-link font-semibold ml-1 hover:underline disabled:opacity-50"
+                            onClick={handleResend}
                         >
                             Resend
                         </button>

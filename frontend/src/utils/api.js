@@ -74,3 +74,26 @@ export async function createTask(formData) {
   if (!res.ok) throw new Error(json?.message || 'Failed to create task');
   return json;
 }
+
+// Password Reset API helpers
+export async function forgotPassword(email_id) {
+  const res = await fetch('/api/auth/forgot-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email_id }),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(json?.message || 'Failed to send OTP');
+  return json;
+}
+
+export async function resetPassword({ email_id, otp, newPassword }) {
+  const res = await fetch('/api/auth/reset-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email_id, otp, newPassword }),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(json?.message || 'OTP verification failed');
+  return json;
+}

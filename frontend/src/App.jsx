@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import OTPVerification from "./pages/OTPVerification";
+import ResetPassword from "./pages/ResetPage";
 import Feed from "./pages/feed";
 import MyTasks from "./pages/MyTasks";
 import MyAddTask from "./pages/AddTask";
@@ -39,6 +40,7 @@ function App() {
                             <Route path="/login" element={<Login />} />
                             <Route path="/signup" element={<Signup />} />
                             <Route path="/otp" element={<OTPVerification />} />
+                            <Route path="/reset" element={<ResetPassword />} />
                         </Route>
 
                         {/* ONLY FOR LOGGED-IN USERS */}
