@@ -3,6 +3,7 @@ import Sidebar from '../components/Sidebar';
 import TaskCard from '../components/TaskCard';
 
 const Feed = () => {
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     // Dummy data mimicking your backend Task schema
     const [tasks] = useState([
         {
@@ -35,11 +36,18 @@ const Feed = () => {
     ]);
 
     return (
-        <div className="flex bg-bg-app min-h-screen">
-            {/* Reusable Sidebar Component */}
-            <Sidebar />
+        <div className="flex bg-bg-app min-h-screen relative">
+            {/* 1. Hamburger Icon - Positioned Top Right on small screens */}
+            <button 
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                className="lg:hidden fixed top-6 right-6 z-50 p-2 bg-action-accept text-white rounded-md shadow-lg text-2xl"
+            >
+                {isSidebarOpen ? '✕' : '☰'}
+            </button>
 
-            {/* Main Content */}
+            {/* 2. Sidebar - Now accepts props for mobile visibility */}
+            <Sidebar isOpen={isSidebarOpen} closeSidebar={() => setIsSidebarOpen(false)} />
+
             <main className="flex-1 p-6 lg:p-10 overflow-y-auto">
                 <header className="mb-8">
                     <h1 className="text-2xl font-bold text-text-primary mb-1">Feed</h1>
@@ -57,24 +65,20 @@ const Feed = () => {
                         <span className="absolute left-3 top-1/2 -translate-y-1/2">🔍</span>
                     </div>
                     
-                    <select className="p-2.5 border border-border-default rounded-lg bg-white min-w-[120px] focus:outline-none focus:ring-2 focus:ring-action-accept">
+                    <select className="p-2.5 border border-border-default rounded-lg bg-white min-w-[120px]">
                         <option>Category</option>
-                        <option>Moving</option>
-                        <option>Cleaning</option>
                     </select>
 
-                    <select className="p-2.5 border border-border-default rounded-lg bg-white min-w-[120px] focus:outline-none focus:ring-2 focus:ring-action-accept">
+                    <select className="p-2.5 border border-border-default rounded-lg bg-white min-w-[120px]">
                         <option>Location</option>
-                        <option>Nearby</option>
                     </select>
 
                     <input 
                         type="date" 
-                        className="p-2.5 border border-border-default rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-action-accept"
+                        className="p-2.5 border border-border-default rounded-lg bg-white"
                     />
                 </div>
 
-                {/* Task Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {tasks.map(task => (
                         <TaskCard key={task.id} task={task} />
