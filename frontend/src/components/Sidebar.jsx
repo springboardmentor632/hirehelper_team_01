@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+// If logo causes issues, replace with placeholder:
+// const logo = "https://via.placeholder.com/32";
 import logo from '../assets/logo.png'; 
 
 const navItems = [
@@ -16,7 +18,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
 
     return (
         <>
-            {/* Mobile Backdrop - Closes sidebar when clicking outside */}
+            {/* Mobile Backdrop */}
             {isOpen && (
                 <div 
                     className="fixed inset-0 bg-black/50 z-40 lg:hidden" 
@@ -24,12 +26,14 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
                 ></div>
             )}
 
+            {/* Sidebar */}
             <div className={`
                 fixed inset-y-0 left-0 z-40 w-64 bg-bg-highlight border-r border-border-default shadow-lg transform transition-transform duration-300 ease-in-out
                 lg:relative lg:translate-x-0 
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+                flex flex-col justify-between
             `}>
-
+                {/* Logo / Header */}
                 <div className="p-4 flex items-center border-b border-border-default">
                     <div className="w-8 h-8 mr-2">
                         <img src={logo} alt="Logo" className="w-full h-full object-contain" />
@@ -37,12 +41,13 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
                     <h2 className="text-xl font-bold text-action-link">Hire a Helper</h2>
                 </div>
 
-                <nav className="flex-1 p-4 space-y-1">
+                {/* Navigation */}
+                <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
                     {navItems.map((item) => (
                         <Link
                             key={item.name}
                             to={item.path}
-                            onClick={closeSidebar} // Close when a link is clicked
+                            onClick={closeSidebar} 
                             className={`
                                 flex items-center p-3 rounded-lg font-medium transition duration-150 ease-in-out
                                 ${location.pathname === item.path 
@@ -57,13 +62,14 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
                     ))}
                 </nav>
 
-                <div className="p-4 border-t border-border-default flex items-center">
-                    <div className="w-10 h-10 rounded-full bg-text-secondary flex items-center justify-center mr-3 text-white text-lg font-bold">
+                {/* Compact User Profile - always at bottom */}
+                <div className="p-3 border-t border-border-default flex items-center">
+                    <div className="w-8 h-8 rounded-full bg-text-secondary flex items-center justify-center mr-2 text-sm font-bold">
                         US
                     </div>
-                    <div>
-                        <p className="text-sm font-semibold text-text-primary">User</p>
-                        <Link to="/profile" className="text-xs text-action-link hover:underline">
+                    <div className="text-xs">
+                        <p className="font-semibold text-text-primary">User</p>
+                        <Link to="/profile" className="text-action-link hover:underline">
                             View profile
                         </Link>
                     </div>
