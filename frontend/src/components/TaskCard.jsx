@@ -2,7 +2,9 @@ import React from 'react';
 
 const TaskCard = ({ task }) => {
     return (
-        <div className="bg-bg-highlight rounded-xl border border-border-default overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col h-full">
+        /* Applied border-[2px] and border-action-accept here */
+        <div className="bg-bg-highlight rounded-xl border-[2px] border-action-accept overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col h-full">
+            
             {/* Task Image */}
             <div className="h-48 w-full overflow-hidden bg-gray-200">
                 <img 
@@ -34,7 +36,8 @@ const TaskCard = ({ task }) => {
                 </div>
 
                 {/* Footer: User & Action */}
-                <div className="flex items-center justify-between pt-3 border-t border-border-default">
+                {/* Updated footer border to match the theme color subtly */}
+                <div className="flex items-center justify-between pt-3 border-t border-action-accept/20">
                     <div className="flex items-center">
                         <div className="w-8 h-8 rounded-full bg-brand-primary flex items-center justify-center text-white text-xs font-bold mr-2 overflow-hidden">
                             {task.user_photo ? (
@@ -47,7 +50,7 @@ const TaskCard = ({ task }) => {
                             {task.user_name}
                         </span>
                     </div>
-                    <button className="px-4 py-1.5 bg-action-accept text-action-decline text-xs font-bold rounded-md hover:bg-opacity-90 transition-colors">
+                    <button className="px-4 py-1.5 bg-action-accept text-action-decline text-xs font-bold rounded-md hover:brightness-95 transition-all">
                         Request
                     </button>
                 </div>
