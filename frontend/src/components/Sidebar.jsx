@@ -1,5 +1,11 @@
 import React from 'react';
+<<<<<<< HEAD
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+=======
+import { Link, useLocation } from 'react-router-dom';
+// If logo causes issues, replace with placeholder:
+// const logo = "https://via.placeholder.com/32";
+>>>>>>> 5420929bbcf5a6c0e400f1cf22fe9371983feae9
 import logo from '../assets/logo.png'; 
 
 const navItems = [
@@ -30,14 +36,23 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
                 ></div>
             )}
 
+<<<<<<< HEAD
             {/* Sidebar Container - Added flex flex-col */}
+=======
+            {/* Sidebar */}
+>>>>>>> 5420929bbcf5a6c0e400f1cf22fe9371983feae9
             <div className={`
                 fixed inset-y-0 left-0 z-40 w-64 bg-bg-highlight border-r border-border-default shadow-lg flex flex-col transform transition-transform duration-300 ease-in-out
                 lg:relative lg:translate-x-0 
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+                flex flex-col justify-between
             `}>
+<<<<<<< HEAD
 
                 {/* Logo Section */}
+=======
+                {/* Logo / Header */}
+>>>>>>> 5420929bbcf5a6c0e400f1cf22fe9371983feae9
                 <div className="p-4 flex items-center border-b border-border-default">
                     <div className="w-8 h-8 mr-2">
                         <img src={logo} alt="Logo" className="w-full h-full object-contain" />
@@ -45,13 +60,22 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
                     <h2 className="text-xl font-bold text-action-link">Hire a Helper</h2>
                 </div>
 
+<<<<<<< HEAD
                 {/* Navigation - Added flex-grow to push footer down */}
                 <nav className="flex-grow p-4 space-y-1 overflow-y-auto">
+=======
+                {/* Navigation */}
+                <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+>>>>>>> 5420929bbcf5a6c0e400f1cf22fe9371983feae9
                     {navItems.map((item) => (
                         <Link
                             key={item.name}
                             to={item.path}
+<<<<<<< HEAD
                             onClick={closeSidebar}
+=======
+                            onClick={closeSidebar} 
+>>>>>>> 5420929bbcf5a6c0e400f1cf22fe9371983feae9
                             className={`
                                 flex items-center p-3 rounded-lg font-medium transition duration-150 ease-in-out
                                 ${location.pathname === item.path 
@@ -66,6 +90,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
                     ))}
                 </nav>
 
+<<<<<<< HEAD
                 {/* Footer Section: User Profile & Logout */}
                 <div className="p-4 border-t border-border-default space-y-4">
                     {/* User Info */}
@@ -79,6 +104,18 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
                                 View profile
                             </Link>
                         </div>
+=======
+                {/* Compact User Profile - always at bottom */}
+                <div className="p-3 border-t border-border-default flex items-center">
+                    <div className="w-8 h-8 rounded-full bg-text-secondary flex items-center justify-center mr-2 text-sm font-bold">
+                        US
+                    </div>
+                    <div className="text-xs">
+                        <p className="font-semibold text-text-primary">User</p>
+                        <Link to="/profile" className="text-action-link hover:underline">
+                            View profile
+                        </Link>
+>>>>>>> 5420929bbcf5a6c0e400f1cf22fe9371983feae9
                     </div>
 
                     {/* Logout Button */}
