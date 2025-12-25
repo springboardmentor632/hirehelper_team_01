@@ -82,7 +82,7 @@ export const resetPassword = async (req, res) => {
   if (record.expiresAt < Date.now())
     return res.status(400).json({ message: "OTP expired" });
 
-  if (record.otp !== otp)
+  if (String(record.otp) !== String(otp))
     return res.status(400).json({ message: "Invalid OTP" });
 
   const hashedPassword = await bcrypt.hash(newPassword, 10);
