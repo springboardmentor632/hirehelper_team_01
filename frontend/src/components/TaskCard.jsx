@@ -1,6 +1,11 @@
 import React from 'react';
 
 const TaskCard = ({ task }) => {
+    const owner = task.user_id || {};
+    const userName = owner.first_name ? `${owner.first_name} ${owner.last_name || ''}`.trim() : task.user_name || 'User';
+    const userPhoto = owner.profile_picture || task.user_photo || '';
+    const startTime = task.start_time ? new Date(task.start_time).toLocaleString() : '';
+
     return (
         /* Applied border-[2px] and border-action-accept here */
         <div className="bg-bg-highlight rounded-xl border-[2px] border-action-accept overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col h-full">
@@ -31,7 +36,7 @@ const TaskCard = ({ task }) => {
                     </div>
                     <div className="flex items-center text-xs text-text-secondary">
                         <span className="mr-2">📅</span>
-                        {task.start_time}
+                        {startTime}
                     </div>
                 </div>
 
@@ -40,14 +45,14 @@ const TaskCard = ({ task }) => {
                 <div className="flex items-center justify-between pt-3 border-t border-action-accept/20">
                     <div className="flex items-center">
                         <div className="w-8 h-8 rounded-full bg-brand-primary flex items-center justify-center text-white text-xs font-bold mr-2 overflow-hidden">
-                            {task.user_photo ? (
-                                <img src={task.user_photo} alt={task.user_name} className="w-full h-full object-cover" />
+                            {userPhoto ? (
+                                <img src={userPhoto} alt={userName} className="w-full h-full object-cover" />
                             ) : (
-                                task.user_name?.charAt(0) || 'U'
+                                (userName || 'U').charAt(0)
                             )}
                         </div>
                         <span className="text-xs font-semibold text-text-primary">
-                            {task.user_name}
+                            {userName}
                         </span>
                     </div>
                     <button className="px-4 py-1.5 bg-action-accept text-action-decline text-xs font-bold rounded-md hover:brightness-95 transition-all">

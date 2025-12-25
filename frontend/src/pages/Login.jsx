@@ -90,10 +90,10 @@ const Login = () => {
                             </button>
 
                             {/* Forgotten Password link */}
-                            <a href="#" className="block text-center text-action-link text-sm mb-6 hover:underline">
+                            <Link to={`/reset?email=${email}`} className="block text-center text-action-link text-sm mb-6 hover:underline">
                                 Forgotten password?
-                            </a>
-
+                            </Link>
+                            
                             {/* Create Account Link (Secondary Action) */}
                             <Link
                                 to="/signup" 

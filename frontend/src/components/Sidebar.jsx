@@ -84,7 +84,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
                     {/* Logout Button */}
                     <button 
                         onClick={handleLogout}
-                        className="w-full flex items-center p-3 rounded-lg font-medium text-action-decline bg-red-50 hover:bg-red-100 transition duration-150"
+                        className="w-full flex items-center p-3 rounded-lg font-medium text-text-primary hover:bg-bg-app hover:text-brand-primary transition duration-150 ease-in-out"
                     >
                         <span className="text-xl mr-3">🚪</span>
                         Logout
