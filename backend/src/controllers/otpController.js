@@ -21,7 +21,7 @@ export const sendSignupOtp = async (req,res) => {
 
      await sendOtp(normalizedEmail, otp, "Account Verification");
 
-     res.json({message:"otp sent to the mail", otp});
+     res.json({message:"otp sent to the mail"});
 }
 
 // verify the signup otp

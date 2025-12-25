@@ -1,25 +1,31 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const requestSchema = new mongoose.Schema(
   {
     task_id: {
-      type: String,
-      required: true,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Task",
+      required: true
     },
 
     requester_id: {
-      type: String,
-      required: true,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true
+    },
+
+    task_owner_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true
     },
 
     status: {
       type: Number,
-      required: true,
-    },
+      default: 0 // 0=pending, 1=accepted, 2=rejected
+    }
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Request", requestSchema);
+export default mongoose.model("Request", requestSchema);
