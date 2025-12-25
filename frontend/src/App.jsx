@@ -7,6 +7,7 @@ import Signup from "./pages/Signup";
 import OTPVerification from "./pages/OTPVerification";
 import Feed from "./pages/feed";
 import MyTasks from "./pages/MyTasks";
+import MyAddTask from "./pages/AddTask";
 // Import the Loader component (Adjust path if needed)
 import Loader from './pages/Loader'; 
 
@@ -54,6 +55,9 @@ function App() {
 
                         {/* Route for the MyTasks page */}
                         <Route path="/mytasks" element={<MyTasks />} />
+
+                        {/* Route for the MyTasks page */}
+                        <Route path="/addtask" element={<MyAddTask />} />
 
                         {/* Optional: Add a 404 Not Found route */}
                         <Route path="*" element={<div>404 Not Found</div>} />
