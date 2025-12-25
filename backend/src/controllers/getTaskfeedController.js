@@ -13,7 +13,8 @@ export const getTaskFeed = async (req, res) => {
  
     const tasks = await Task.find(filter)
       .sort({ createdAt: -1 })
-      .limit(50);
+      .limit(50)
+      .populate({ path: 'user_id', select: 'first_name last_name profile_picture' });
  
     console.log(`Found ${tasks.length} tasks in feed`);
  

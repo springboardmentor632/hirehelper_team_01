@@ -24,15 +24,22 @@ export const registerTask = async (req, res) => {
     const file = req.file || null;
     let pictureUrl = "";
     if (file) {
-      const localPath = path.join(file.destination, file.filename);
-      const resUpload = await cloudinary.uploader.upload(localPath, {
-        folder: "hirehelper/tasks",
-        resource_type: "image"
-      });
-      pictureUrl = resUpload.secure_url || resUpload.url || "";
       try {
-        fs.unlinkSync(localPath);
-      } catch {}
+        const localPath = path.join(file.destination, file.filename);
+        console.log('Uploading file:', localPath);
+        const resUpload = await cloudinary.uploader.upload(localPath, {
+          folder: "hirehelper/tasks",
+          resource_type: "image"
+        });
+        pictureUrl = resUpload.secure_url || resUpload.url || "";
+        console.log('Cloudinary upload success:', pictureUrl);
+        try {
+          fs.unlinkSync(localPath);
+        } catch {}
+      } catch (imgErr) {
+        console.warn('Image upload failed (will continue without image):', imgErr.message);
+        pictureUrl = "";
+      }
     }
 
     const task = await Task.create({
