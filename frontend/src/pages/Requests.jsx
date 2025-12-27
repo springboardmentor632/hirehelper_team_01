@@ -3,58 +3,12 @@ import Sidebar from "../components/Sidebar";
 import RequestCard from "../components/RequestCard";
 import { Bell } from "lucide-react";
 
-/* ---------------- MOCK DATA ---------------- */
-const mockRequests = [
-  {
-    id: 1,
-    name: "Scott Johnson",
-    rating: "4.8",
-    reviews: 18,
-    time: "1 hour ago",
-    distance: "2km away",
-    message:
-      "I'd be happy to help with your computer setup. I have 5+ years of IT experience.",
-    job: "Computer Setup Help",
-    duration: "1-2 hrs",
-    slot: "2:00 PM - 4:00 PM",
-    imageUrl: "https://i.pravatar.cc/150?img=12",
-  },
-  {
-    id: 2,
-    name: "Alex Martin",
-    rating: "4.6",
-    reviews: 12,
-    time: "30 mins ago",
-    distance: "1.5km away",
-    message:
-      "Experienced technician available for laptop repair and configuration.",
-    job: "Laptop Repair",
-    duration: "1 hr",
-    slot: "5:00 PM - 6:00 PM",
-    imageUrl: "",
-  },
-  {
-    id: 3,
-    name: "Chris Evans",
-    rating: "4.9",
-    reviews: 22,
-    time: "10 mins ago",
-    distance: "3km away",
-    message:
-      "Professional electrician for home wiring and appliance fixing.",
-    job: "Electrician Service",
-    duration: "2 hrs",
-    slot: "6:00 PM - 8:00 PM",
-    imageUrl: "",
-  },
-];
-
-/* ---------------- PAGE ---------------- */
-const Requests = () => {
+const Requests = ({ requests = [] }) => {
   const [search, setSearch] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const filteredRequests = mockRequests.filter((req) =>
+  // Filter requests based on search input
+  const filteredRequests = requests.filter((req) =>
     `${req.name} ${req.job} ${req.message}`
       .toLowerCase()
       .includes(search.toLowerCase())
