@@ -10,6 +10,9 @@ import Feed from "./pages/feed";
 import MyTasks from "./pages/MyTasks";
 import MyAddTask from "./pages/AddTask";
 import Loader from './pages/Loader'; 
+import Requests from './pages/Requests';
+import MyRequests from './pages/MyRequests';
+import ProfileSettings from './pages/ProfileSettings';
 
 // Helpers
 import ProtectedRoute from './utils/ProtectedRoute';
@@ -48,6 +51,10 @@ function App() {
                             <Route path="/feed" element={<Feed />} />
                             <Route path="/mytasks" element={<MyTasks />} />
                             <Route path="/addtask" element={<MyAddTask />} />
+                            <Route path="/requests" element={<Requests />} />
+                            <Route path="/myrequests" element={<MyRequests />} />
+                            <Route path="/profile" element={<ProfileSettings />} />
+                            <Route path="/settings" element={<ProfileSettings />} />
                         </Route>
 
                         <Route path="*" element={<div>404 Not Found</div>} />

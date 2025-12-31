@@ -68,19 +68,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
 
                 {/* Footer Section: User Profile & Logout */}
                 <div className="p-4 border-t border-border-default space-y-4">
-                    {/* User Info */}
-                    <div className="flex items-center">
-                        <div className="w-10 h-10 rounded-full bg-text-secondary flex items-center justify-center mr-3 text-white text-lg font-bold">
-                            US
-                        </div>
-                        <div>
-                            <p className="text-sm font-semibold text-text-primary">User</p>
-                            <Link to="/profile" className="text-xs text-action-link hover:underline">
-                                View profile
-                            </Link>
-                        </div>
-                    </div>
-
+                    
                     {/* Logout Button */}
                     <button 
                         onClick={handleLogout}
