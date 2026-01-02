@@ -22,7 +22,8 @@ const requestSchema = new mongoose.Schema(
 
     status: {
       type: Number,
-      default: 0 // 0=pending, 1=accepted, 2=rejected
+      enum: [0, 1, 2], // 0 = pending, 1 = accepted, 2 = rejected
+      default: 0
     }
   },
   { timestamps: true }
