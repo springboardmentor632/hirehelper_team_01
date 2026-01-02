@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import Task from "../models/Task.js";
 import Request from "../models/Request.js";
+import User from "../models/User.js";
+import { sendNotificationEmail } from "../utils/sendOtp.js";
  
 /**
  * MEMBER-1
@@ -57,10 +59,34 @@ export const createRequest = async (req, res) => {
       task_owner_id: task.user_id,
       status: 0
     });
- 
+
+        // notify requester and task owner via email
+    try {
+      const [requester, owner] = await Promise.all([
+        User.findById(userId, { email_id: 1, first_name: 1 }),
+        User.findById(task.user_id, { email_id: 1, first_name: 1 })
+      ]);
+      if (requester?.email_id) {
+        await sendNotificationEmail(
+          requester.email_id,
+          "Task Request Sent",
+          `Hi ${requester.first_name || "there"}, your request for "${task.title}" was sent successfully.`
+        );
+      }
+      if (owner?.email_id) {
+        await sendNotificationEmail(
+          owner.email_id,
+          "New Task Request Received",
+          `Hi ${owner.first_name || "there"}, you received a new request for your task "${task.title}".`
+        );
+      }
+    } catch (e) {
+      console.log("Email notification error (createRequest):", e.message);
+    }
+
     return res.status(201).json({
       success: true,
-      message: "Request created successfully",
+      message: "Request sent successfully",
       data: {
         requestId: request._id,
         status: request.status
@@ -73,8 +99,8 @@ export const createRequest = async (req, res) => {
       message: "Server error"
     });
   }
-};
-
+}; 
+ 
 /**
  * MEMBER-2
  * Get requests received for task owner's tasks
@@ -204,9 +230,39 @@ export const updateRequestStatus = async (req, res) => {
     request.status = status;
     await request.save();
  
+    // notify requester (and owner) via email on accept/reject
+    try {
+      const [requester, owner, task] = await Promise.all([
+        User.findById(request.requester_id, { email_id: 1, first_name: 1 }),
+        User.findById(request.task_owner_id, { email_id: 1, first_name: 1 }),
+        Task.findById(request.task_id, { title: 1 })
+      ]);
+      const accepted = status === 1;
+      if (requester?.email_id) {
+        await sendNotificationEmail(
+          requester.email_id,
+          accepted ? "Task Request Accepted" : "Task Request Rejected",
+          accepted
+            ? `Hi ${requester.first_name || "there"}, your request for "${task?.title || "the task"}" was accepted successfully.`
+            : `Hi ${requester.first_name || "there"}, your request for "${task?.title || "the task"}" was rejected.`
+        );
+      }
+      if (owner?.email_id) {
+        await sendNotificationEmail(
+          owner.email_id,
+          accepted ? "You Accepted a Request" : "You Rejected a Request",
+          accepted
+            ? `Hi ${owner.first_name || "there"}, you accepted a request for "${task?.title || "your task"}".`
+            : `Hi ${owner.first_name || "there"}, you rejected a request for "${task?.title || "your task"}".`
+        );
+      }
+    } catch (e) {
+      console.log("Email notification error (updateRequestStatus):", e.message);
+    }
+
     return res.json({
       success: true,
-      message: status === 1 ? "Request accepted" : "Request rejected"
+      message: status === 1 ? "Request accepted successfully" : "Request rejected"
     });
   } catch (error) {
     console.error("Update request status error:", error);
