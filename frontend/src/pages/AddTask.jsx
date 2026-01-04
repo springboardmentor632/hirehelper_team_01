@@ -43,10 +43,7 @@ const AddTask = () => {
 
   return (
     <div className="p-6 sm:p-10 space-y-6">
-        <div className="mb-4">
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#18181B]">Add a New Task</h1>
-          <p className="text-[#71717A] mt-1">Fill out the details below to post a task.</p>
-        </div>
+        
 
         <form onSubmit={handleSubmit} className="bg-[#D8FFBB] border border-[#3A5B22] rounded-xl p-6 sm:p-8 w-full space-y-6">
           <div>

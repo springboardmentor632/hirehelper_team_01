@@ -115,7 +115,7 @@ const VerifyEmail = () => {
 
     const heading = type === 'reset' ? 'Verify OTP' : 'Verify Your Email';
     const description = type === 'reset' 
-        ? `We've sent a 6-digit OTP to ${email || 'your email'}.` 
+        ? `We've sent a 6-digit OTP to your email.` 
         : 'We\'ve sent a 6-digit code to your email.';
 
     return (

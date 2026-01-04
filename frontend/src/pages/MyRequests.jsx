@@ -28,13 +28,6 @@ const MyRequests = () => {
 
   return (
     <div className="p-6 lg:p-10">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-[#1E293B]">My Requests</h1>
-        <p className="text-[#475569] mt-1">
-          Track the status of all the task requests you've sent.
-        </p>
-      </header>
-
       <div className="space-y-6 max-w-5xl">
         {myRequestsData.map((request) => (
           <MyRequestCard key={request.id} {...request} />
