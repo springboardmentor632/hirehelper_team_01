@@ -20,10 +20,7 @@ const Feed = () => {
 
     return (
         <div className="p-6 lg:p-10">
-            <header className="mb-8">
-                <h1 className="text-2xl font-bold text-text-primary mb-1">Feed</h1>
-                <p className="text-text-secondary">Find tasks you can help with.</p>
-            </header>
+           
 
             {/* Filter / Search Bar */}
             <div className="flex flex-wrap gap-4 mb-8">

@@ -56,41 +56,6 @@ const Requests = ({ requests = MOCK_REQUESTS }) => {
 
   return (
     <div className="p-6 lg:p-8">
-      {/* Header Row */}
-      <div className="flex flex-wrap gap-4 justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-[#1E293B]">Requests</h1>
-          <p className="mt-1 text-[#64748B]">
-            Accept or decline requests to help with your tasks
-          </p>
-        </div>
-
-        {/* Actions (Search & Notifications) */}
-        <div className="flex items-center gap-4">
-          <div className="relative w-64">
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search tasks..."
-              className="w-full px-4 py-2 pl-10 rounded-lg border border-[#3A5B22]/20 bg-white focus:ring-2 focus:ring-[#3A5B22] outline-none"
-            />
-            <span className="absolute left-3 top-1/2 -translate-y-1/2">
-              🔍
-            </span>
-          </div>
-
-          <div className="relative cursor-pointer p-2 bg-white rounded-full border border-[#3A5B22]/20">
-            <Bell className="text-[#3A5B22] w-6 h-6" />
-            {filteredRequests.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold">
-                {filteredRequests.length}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-
       {/* Request Cards List */}
       <div className="space-y-6 max-w-5xl">
         {filteredRequests.length ? (

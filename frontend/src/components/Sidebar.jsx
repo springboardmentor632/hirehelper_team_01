@@ -22,17 +22,17 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
 
     return (
         <>
-            {/* Mobile Backdrop */}
+            {/* Mobile Backdrop - Increased z-index to z-50 */}
             {isOpen && (
                 <div 
-                    className="fixed inset-0 bg-black/50 z-40 lg:hidden" 
+                    className="fixed inset-0 bg-black/50 z-50 lg:hidden" 
                     onClick={closeSidebar}
                 ></div>
             )}
 
-            {/* Sidebar Container - Added flex flex-col */}
+            {/* Sidebar Container - Increased z-index to z-50 */}
             <div className={`
-                fixed inset-y-0 left-0 z-40 w-64 bg-bg-highlight border-r border-border-default shadow-lg flex flex-col transform transition-transform duration-300 ease-in-out
+                fixed inset-y-0 left-0 z-50 w-64 bg-bg-highlight border-r border-border-default shadow-lg flex flex-col transform transition-transform duration-300 ease-in-out
                 lg:relative lg:translate-x-0 
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
             `}>
