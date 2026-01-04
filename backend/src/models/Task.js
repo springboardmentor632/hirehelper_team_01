@@ -50,6 +50,12 @@ const taskSchema = new mongoose.Schema(
       default: "",
     },
 
+    assigned_helper: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null
+    },
+
     picture: {
       type: String,
       default: "",
