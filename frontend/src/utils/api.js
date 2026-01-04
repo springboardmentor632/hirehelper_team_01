@@ -53,6 +53,53 @@ export async function fetchFeed() {
   return json.data || json.tasks || [];
 }
 
+// Requests API helpers
+export async function sendRequest(taskId) {
+  const token = localStorage.getItem('token');
+  const res = await fetch('/api/requests', {
+    method: 'POST',
+    headers: Object.assign({ 'Content-Type': 'application/json' }, token ? { Authorization: `Bearer ${token}` } : {}),
+    body: JSON.stringify({ taskId }),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(json?.message || 'Failed to send request');
+  return json;
+}
+
+export async function getMyRequests() {
+  const token = localStorage.getItem('token');
+  const res = await fetch('/api/requests/my', {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  let json = {};
+  try { json = await res.json(); } catch (e) { json = {}; }
+  if (!res.ok) throw new Error(`${res.status} ${json?.message || res.statusText || 'Failed to fetch your requests'}`);
+  return json.data || [];
+}
+
+export async function getReceivedRequests() {
+  const token = localStorage.getItem('token');
+  const res = await fetch('/api/requests/received', {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  let json = {};
+  try { json = await res.json(); } catch (e) { json = {}; }
+  if (!res.ok) throw new Error(`${res.status} ${json?.message || res.statusText || 'Failed to fetch received requests'}`);
+  return json.data || [];
+}
+
+export async function updateRequestStatus(requestId, status) {
+  const token = localStorage.getItem('token');
+  const res = await fetch(`/api/requests/${requestId}/status`, {
+    method: 'PATCH',
+    headers: Object.assign({ 'Content-Type': 'application/json' }, token ? { Authorization: `Bearer ${token}` } : {}),
+    body: JSON.stringify({ status }),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(json?.message || 'Failed to update request status');
+  return json;
+}
+
 export async function fetchMyTasks() {
   const token = localStorage.getItem('token');
   const res = await fetch('/api/tasks/my', {

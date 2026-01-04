@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { sendRequest } from '../utils/api';
 
 const TaskCard = ({ task }) => {
     const owner = task.user_id || {};
+    const navigate = useNavigate();
+    const [requesting, setRequesting] = useState(false);
     const userName = owner.first_name ? `${owner.first_name} ${owner.last_name || ''}`.trim() : task.user_name || 'User';
     const userPhoto = owner.profile_picture || task.user_photo || '';
     const startTime = task.start_time ? new Date(task.start_time).toLocaleString() : '';
@@ -55,8 +59,31 @@ const TaskCard = ({ task }) => {
                             {userName}
                         </span>
                     </div>
-                    <button className="px-4 py-1.5 bg-action-accept text-action-decline text-xs font-bold rounded-md hover:brightness-95 transition-all">
-                        Request
+                    <button
+                        onClick={async () => {
+                            if (requesting) return;
+                            const token = localStorage.getItem('token');
+                            if (!token) {
+                                alert('Please login to send a request');
+                                navigate('/login');
+                                return;
+                            }
+                            try {
+                                setRequesting(true);
+                                await sendRequest(task._id || task.id || task._id);
+                                alert('Request sent. You can view it in My Requests.');
+                                navigate('/myrequests');
+                            } catch (err) {
+                                console.error('sendRequest error:', err);
+                                alert(err.message || 'Failed to send request');
+                            } finally {
+                                setRequesting(false);
+                            }
+                        }}
+                        disabled={requesting}
+                        className="px-4 py-1.5 bg-action-accept text-action-decline text-xs font-bold rounded-md hover:brightness-95 transition-all disabled:opacity-60"
+                    >
+                        {requesting ? 'Sending...' : 'Request'}
                     </button>
                 </div>
             </div>
