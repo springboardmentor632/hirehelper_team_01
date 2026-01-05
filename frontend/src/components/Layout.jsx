@@ -36,7 +36,7 @@ const Layout = () => {
             <main className="flex-1 h-full flex flex-col overflow-hidden relative">
                 
                 {/* --- UPLIFTED DASHBOARD HEADER --- */}
-                <header className="w-full p-6 lg:p-8 flex flex-col gap-2 bg-transparent z-40">
+                <header className="w-full p-6 lg:p-5 flex flex-col gap-2 bg-transparent z-40 border-b  border-action-accept">
                     <div className="flex items-center justify-between">
                         {/* 1. Left: Mobile Toggle & Page Title */}
                         <div className="flex items-center gap-4">

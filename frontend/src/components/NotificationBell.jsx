@@ -4,10 +4,23 @@ const NotificationBell = () => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
 
-    const notifications = [
-        { id: 1, text: "New task request for 'Cleaning'", time: "2 mins ago", unread: true },
-        { id: 2, text: "Your task 'Delivery' was accepted", time: "1 hour ago", unread: false },
-    ];
+    const [notifications, setNotifications] = useState(() => {
+        try {
+            return JSON.parse(localStorage.getItem('notifications') || '[]');
+        } catch (e) {
+            return [];
+        }
+    });
+
+    useEffect(() => {
+        const onStorage = (e) => {
+            if (e.key === 'notifications') {
+                try { setNotifications(JSON.parse(e.newValue || '[]')); } catch { /* ignore */ }
+            }
+        };
+        window.addEventListener('storage', onStorage);
+        return () => window.removeEventListener('storage', onStorage);
+    }, []);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -41,10 +54,13 @@ const NotificationBell = () => {
                         Notifications
                     </div>
                     <div className="max-h-60 overflow-y-auto">
+                        {notifications.length === 0 && (
+                            <div className="p-3 text-sm text-[#64748B]">No notifications</div>
+                        )}
                         {notifications.map((notif) => (
                             <div key={notif.id} className="p-3 border-b border-border-default last:border-0 hover:bg-bg-app cursor-pointer">
                                 <p className="text-xs text-text-primary font-medium">{notif.text}</p>
-                                <p className="text-[10px] text-text-secondary mt-1">{notif.time}</p>
+                                <p className="text-[10px] text-text-secondary mt-1">{new Date(notif.time).toLocaleString()}</p>
                             </div>
                         ))}
                     </div>
