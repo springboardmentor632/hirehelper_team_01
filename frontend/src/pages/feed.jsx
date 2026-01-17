@@ -9,6 +9,7 @@ const Feed = () => {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [location, setLocation] = useState("");
+  const [date, setDate] = useState(""); // <-- New state for date
 
   useEffect(() => {
     let mounted = true;
@@ -30,16 +31,15 @@ const Feed = () => {
     return (
       task.title?.toLowerCase().includes(search.toLowerCase()) &&
       (category === "" || task.category === category) &&
-      (location === "" || task.location === location)
+      (location === "" || task.location === location) &&
+      (date === "" || task.date === date) // <-- Filter by date
     );
   });
 
   return (
     <div className="p-6 lg:p-10">
-
       {/* Filter / Search Bar */}
       <div className="flex flex-wrap gap-4 mb-8">
-
         {/* Search */}
         <div className="relative flex-1 min-w-[200px]">
           <input
@@ -58,6 +58,10 @@ const Feed = () => {
           onChange={(e) => setCategory(e.target.value)}
           className="p-2.5 border border-border-default rounded-lg bg-white min-w-[120px]"
         >
+          <option value="">Category</option>
+          <option value="Development">Development</option>
+          <option value="Design">Design</option>
+          <option value="Marketing">Marketing</option>
         </select>
 
         {/* Location */}
@@ -72,19 +76,23 @@ const Feed = () => {
           <option value="Mumbai">Mumbai</option>
         </select>
 
+        {/* Date */}
+        <input
+          type="date"
+          value={date} // <-- bind state
+          onChange={(e) => setDate(e.target.value)} // <-- update state
+          className="p-2.5 border border-border-default rounded-lg bg-white"
+        />
       </div>
 
       {/* Tasks */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {filteredTasks.length > 0 ? (
-          filteredTasks.map((task) => (
-            <TaskCard key={task.id} task={task} />
-          ))
+          filteredTasks.map((task) => <TaskCard key={task.id} task={task} />)
         ) : (
           <p className="text-gray-500">No tasks found</p>
         )}
       </div>
-
     </div>
   );
 };
