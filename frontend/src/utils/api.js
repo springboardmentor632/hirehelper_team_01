@@ -144,3 +144,48 @@ export async function resetPassword({ email_id, otp, newPassword }) {
   if (!res.ok) throw new Error(json?.message || 'OTP verification failed');
   return json;
 }
+// User Profile API helpers
+export async function getUserProfile() {
+  const token = localStorage.getItem('token');
+  const res = await fetch('/api/user/profile', {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(json?.message || 'Failed to fetch profile');
+  return json.user || {};
+}
+
+export async function updateUserProfile(userData) {
+  const token = localStorage.getItem('token');
+  const res = await fetch('/api/user/update-profile', {
+    method: 'PUT',
+    headers: Object.assign({ 'Content-Type': 'application/json' }, token ? { Authorization: `Bearer ${token}` } : {}),
+    body: JSON.stringify(userData),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(json?.message || 'Failed to update profile');
+  return json.user || {};
+}
+
+export async function updateProfilePictureAndBio(formData) {
+  const token = localStorage.getItem('token');
+  const res = await fetch('/api/user/update-profile-picture-bio', {
+    method: 'PUT',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: formData,
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(json?.message || 'Failed to update profile picture and bio');
+  return json.user || {};
+}
+
+export async function removeProfilePicture() {
+  const token = localStorage.getItem('token');
+  const res = await fetch('/api/user/remove-profile-picture', {
+    method: 'DELETE',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(json?.message || 'Failed to remove profile picture');
+  return json.user || {};
+}

@@ -54,16 +54,7 @@ const Layout = () => {
                         {/* 2. Right: Conditional Search & Bell */}
                         <div className="flex items-center gap-6">
                             
-                            {/* ONLY SHOW SEARCH ON REQUESTS PAGE */}
-                            {location.pathname === '/requests' && (
-                                <div className="hidden md:flex relative w-64 lg:w-80">
-                                    <input 
-                                        type="text" 
-                                        placeholder="Search tasks..." 
-                                        className="w-full p-2.5 px-4 bg-white border border-[#A8E085] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3A5B22]/20 shadow-sm text-sm text-[#1A1A1A]"
-                                    />
-                                </div>
-                            )}
+                            
 
                             <NotificationBell />
                         </div>

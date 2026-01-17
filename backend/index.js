@@ -8,6 +8,8 @@ import authRoutes from "./src/routes/authRoutes.js";
 import taskRoutes from "./src/routes/taskRoutes.js";
 import taskFeedRoutes from "./src/routes/taskFeedRoutes.js";
 import requestRoutes from "./src/routes/requestRoutes.js";
+import userRoutes from "./src/routes/userRoutes.js";
+
 import cors from "cors";
 
 const app = express();
@@ -26,6 +28,8 @@ app.use("/api/tasks", taskRoutes);
 app.use("/api/tasks", taskFeedRoutes);  // feed route
 
 app.use("/api/requests", requestRoutes);
+
+app.use("/api/user", userRoutes);
 
 app.get("/", (req, res) => {
   res.send("Backend is running and connected to MongoDB!");
