@@ -52,18 +52,6 @@ const Feed = () => {
           <span className="absolute left-3 top-1/2 -translate-y-1/2">🔍</span>
         </div>
 
-        {/* Category */}
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="p-2.5 border border-border-default rounded-lg bg-white min-w-[120px]"
-        >
-          <option value="">Category</option>
-          <option value="Development">Development</option>
-          <option value="Design">Design</option>
-          <option value="Marketing">Marketing</option>
-        </select>
-
         {/* Location */}
         <select
           value={location}
