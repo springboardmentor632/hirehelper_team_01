@@ -2,48 +2,6 @@ import React, { useEffect, useState } from "react";
 import RequestCard from "../components/RequestCard";
 import { getReceivedRequests, updateRequestStatus } from "../utils/api";
 
-const MOCK_REQUESTS = [
-  {
-    id: 1,
-    name: "Marcus Thorne",
-    imageUrl: "https://i.pravatar.cc/150?u=marcus",
-    rating: 4.9,
-    reviews: 128,
-    time: "2 hours ago",
-    distance: "1.2 miles away",
-    message: "Hi! I saw your request for lawn maintenance. I specialize in organic pest control and precision hedging. I have my own tools and can start this weekend.",
-    job: "Full Garden Maintenance",
-    duration: "4 hours",
-    slot: "Sat, Oct 12 • 10:00 AM",
-  },
-  {
-    id: 2,
-    name: "Sarah Jenkins",
-    imageUrl: null,
-    rating: 4.7,
-    reviews: 42,
-    time: "15 mins ago",
-    distance: "0.5 miles away",
-    message: "I love golden retrievers! I live just around the corner and have been dog-walking for 3 years. I'm very comfortable with high-energy dogs.",
-    job: "Dog Walking & Feeding",
-    duration: "1 hour",
-    slot: "Today • 5:30 PM",
-  },
-  {
-    id: 3,
-    name: "Alex Rivera",
-    imageUrl: "https://i.pravatar.cc/150?u=alex",
-    rating: 5.0,
-    reviews: 15,
-    time: "Yesterday",
-    distance: "3.8 miles away",
-    message: "I can help with the shelving unit assembly. I'm an expert with IKEA and custom wall mounts. Please let me know if I should bring heavy-duty wall anchors.",
-    job: "Furniture Assembly",
-    duration: "2.5 hours",
-    slot: "Mon, Oct 14 • 2:00 PM",
-  },
-];
-
 const Requests = () => {
   const [requests, setRequests] = useState([]);
   const [search, setSearch] = useState("");
@@ -58,8 +16,8 @@ const Requests = () => {
         if (!mounted) return;
         setRequests(data || []);
       } catch (e) {
-        console.error('getReceivedRequests error:', e);
-        setError(e.message || 'Failed to load requests');
+        console.error("getReceivedRequests error:", e);
+        setError(e.message || "Failed to load requests");
       } finally {
         setLoading(false);
       }
@@ -70,45 +28,57 @@ const Requests = () => {
 
   const pushNotification = (notif) => {
     try {
-      const existing = JSON.parse(localStorage.getItem('notifications') || '[]');
+      const existing = JSON.parse(localStorage.getItem("notifications") || "[]");
       existing.unshift(notif);
-      localStorage.setItem('notifications', JSON.stringify(existing));
+      localStorage.setItem("notifications", JSON.stringify(existing));
     } catch (e) {
-      console.warn('Failed to push notification', e.message);
+      console.warn("Failed to push notification", e.message);
     }
   };
 
   const handleStatusChange = async (requestId, status, requestData) => {
     try {
       await updateRequestStatus(requestId, status);
-      // update local UI
-      setRequests((prev) => prev.map((r) => (r._id === requestId || r.id === requestId ? { ...r, status } : r)));
+      setRequests((prev) =>
+        prev.map((r) => (r._id === requestId || r.id === requestId ? { ...r, status } : r))
+      );
 
-      // notify requester (store in localStorage so NotificationBell can pick it up)
       const accepted = status === 1;
-      const taskTitle = requestData?.task_id?.title || 'your task';
+      const taskTitle = requestData?.task_id?.title || "your task";
       const notif = {
         id: Date.now(),
-        text: accepted ? `Your request for "${taskTitle}" was accepted.` : `Your request for "${taskTitle}" was rejected.`,
+        text: accepted
+          ? `Your request for "${taskTitle}" was accepted.`
+          : `Your request for "${taskTitle}" was rejected.`,
         time: new Date().toISOString(),
         unread: true,
       };
       pushNotification(notif);
 
-      alert(accepted ? 'Request accepted' : 'Request rejected');
+      alert(accepted ? "Request accepted" : "Request rejected");
     } catch (e) {
-      alert(e.message || 'Failed to update request');
+      alert(e.message || "Failed to update request");
     }
   };
 
+  //  Fixed search: filter using name and job
   const filteredRequests = requests.filter((req) =>
-    `${req.requester_id?.first_name || req.requester_id?.name || ''} ${req.task_id?.title || ''}`
-      .toLowerCase()
-      .includes(search.toLowerCase())
+    `${req.name || ""} ${req.job || ""}`.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <div className="p-6 lg:p-8">
+      {/* Search Input */}
+      <div className="mb-6 max-w-sm">
+        <input
+          type="text"
+          placeholder="Search requests..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="border p-2 rounded w-full"
+        />
+      </div>
+
       {/* Request Cards List */}
       <div className="space-y-6 max-w-5xl">
         {loading && <p className="text-sm text-[#64748B]">Loading requests...</p>}
@@ -119,29 +89,29 @@ const Requests = () => {
           </div>
         )}
 
-        {!loading && filteredRequests.map((req) => {
-          const requester = req.requester_id || {};
-          const name = requester.first_name ? `${requester.first_name} ${requester.last_name || ''}`.trim() : requester.name || 'Requester';
-          const message = "I want to work on the task you have provided and its description.";
-          return (
-            <RequestCard
-              key={req._id || req.id}
-              name={name}
-              imageUrl={requester.profile_picture || ''}
-              rating={requester.rating || 0}
-              reviews={requester.reviews || 0}
-              time={new Date(req.createdAt).toLocaleString()}
-              distance={req.distance || ''}
-              message={message}
-              job={req.task_id?.title || ''}
-              duration={req.task_id?.duration || ''}
-              slot={req.task_id?.start_time ? new Date(req.task_id.start_time).toLocaleString() : ''}
-              search={search}
-              onAccept={() => handleStatusChange(req._id || req.id, 1, req)}
-              onDecline={() => handleStatusChange(req._id || req.id, 2, req)}
-            />
-          );
-        })}
+        {!loading &&
+          filteredRequests.map((req) => {
+            const name = req.name || "Requester";
+            const message = req.message || "I want to work on the task you have provided and its description.";
+            return (
+              <RequestCard
+                key={req._id || req.id}
+                name={name}
+                imageUrl={req.imageUrl || ""}
+                rating={req.rating || 0}
+                reviews={req.reviews || 0}
+                time={req.time ? new Date(req.time).toLocaleString() : ""}
+                distance={req.distance || ""}
+                message={message}
+                job={req.job || ""}
+                duration={req.duration || ""}
+                slot={req.slot || ""}
+                search={search}
+                onAccept={() => handleStatusChange(req._id || req.id, 1, req)}
+                onDecline={() => handleStatusChange(req._id || req.id, 2, req)}
+              />
+            );
+          })}
       </div>
     </div>
   );
