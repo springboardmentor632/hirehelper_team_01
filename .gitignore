@@ -1,11 +1,17 @@
 
+# 1. Ignore everything in the root
+/*
+
+# 2. Allow the folders you want to keep
+!/frontend/
+!/backend/
+
+# 3. Standard ignores for the allowed folders 
+# (Add these so you don't accidentally track junk inside frontend/backend)
 node_modules/
-
 .env
-
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
 .DS_Store
 Thumbs.db
