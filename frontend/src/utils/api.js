@@ -113,18 +113,18 @@ export async function deleteTask(taskId) {
 }
 
 // ================= REQUEST APIs =================
-export async function sendRequest(taskId) {
-  const token = localStorage.getItem("token");
-  const res = await fetch("/api/requests", {
-    method: "POST",
+export async function sendRequest(taskId, message = '') {
+  const token = localStorage.getItem('token');
+  const res = await fetch('/api/requests', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    body: JSON.stringify({ taskId }),
+    body: JSON.stringify({ taskId, message }),
   });
   const json = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(json?.message || "Failed to send request");
+  if (!res.ok) throw new Error(json?.message || 'Failed to send request');
   return json;
 }
 
@@ -164,6 +164,44 @@ export async function updateRequestStatus(requestId, status) {
   if (!res.ok)
     throw new Error(json?.message || "Failed to update request status");
   return json;
+}
+
+export async function acceptRequest(requestId) {
+  return updateRequestStatus(requestId, 1);
+}
+
+export async function declineRequest(requestId) {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`/api/requests/${requestId}/decline`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok)
+    throw new Error(json?.message || "Failed to decline request");
+  return json;
+}
+
+export async function cancelRequest(requestId) {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`/api/requests/${requestId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok)
+    throw new Error(json?.message || "Failed to cancel request");
+  return json;
+}
+
+export async function fetchIncomingRequests() {
+  return getReceivedRequests();
 }
 
 // ================= USER PROFILE APIs =================

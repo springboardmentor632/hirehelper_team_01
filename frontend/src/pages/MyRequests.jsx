@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import MyRequestCard from "../components/MyRequestCard";
-import { getMyRequests } from "../utils/api";
+import { getMyRequests, cancelRequest } from "../utils/api";
 
 const MyRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -25,29 +25,45 @@ const MyRequests = () => {
     return () => (mounted = false);
   }, []);
 
+  const handleCancelRequest = async (requestId) => {
+    if (!window.confirm("Are you sure you want to cancel this request?")) return;
+    try {
+      await cancelRequest(requestId);
+      // Remove request from UI immediately
+      setRequests(prev => prev.filter(r => r._id !== requestId));
+    } catch (e) {
+      alert(e.message || "Failed to cancel request");
+    }
+  };
+
   const renderRequests = () => {
     if (!requests.length) return <p className="text-sm text-[#64748B]">No requests found.</p>;
 
     return requests.map((r) => {
       const task = r.task_id || {};
-      const owner = r.task_owner_id || {};
-      const recipientName = owner.first_name ? `${owner.first_name} ${owner.last_name || ''}`.trim() : owner.name || owner.email_id || 'User';
-      const recipientImage = owner.profile_picture || '';
+      const taskOwner = task.user_id || {};
+      const recipientName = taskOwner.first_name ? `${taskOwner.first_name} ${taskOwner.last_name || ''}`.trim() : 'User';
+      const recipientImage = taskOwner.profile_picture || '';
       const taskTitle = task.title || 'Task';
       const location = task.location || '';
       const dateTime = task?.start_time ? new Date(task.start_time).toLocaleString() : '';
-      const status = r.status === 1 ? 'Accepted' : r.status === 2 ? 'Rejected' : 'Pending';
+      // Ensure this matches the strings exactly
+const status = r.status === 1 ? 'Accepted' : r.status === 2 ? 'Rejected' : 'Pending';
+      const message = r.message || "I want to work on the task you have provided.";
 
       return (
         <MyRequestCard
           key={r._id || r.id}
+          requestId={r._id}
           taskTitle={taskTitle}
           recipientName={recipientName}
           recipientImage={recipientImage}
-          message={"I want to work on the task you have provided and its description."}
+          message={message}
           location={location}
           dateTime={dateTime}
           status={status}
+          onCancel={() => handleCancelRequest(r._id)}
+          canCancel={status === 'Pending'}
         />
       );
     });
