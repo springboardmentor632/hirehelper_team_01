@@ -24,6 +24,11 @@ const requestSchema = new mongoose.Schema(
       type: Number,
       enum: [0, 1, 2], // 0 = pending, 1 = accepted, 2 = rejected
       default: 0
+    },
+
+    message: {
+      type: String,
+      default: ""
     }
   },
   { timestamps: true }

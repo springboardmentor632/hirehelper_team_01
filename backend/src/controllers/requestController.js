@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Task from "../models/Task.js";
 import Request from "../models/Request.js";
 import User from "../models/User.js";
+import Notification from "../models/Notification.js";
 import { sendNotificationEmail } from "../utils/sendOtp.js";
  
 /**
@@ -11,7 +12,7 @@ import { sendNotificationEmail } from "../utils/sendOtp.js";
 export const createRequest = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { taskId } = req.body;
+    const { taskId, message } = req.body;
  
     // validate taskId
     if (!taskId || !mongoose.Types.ObjectId.isValid(taskId)) {
@@ -52,12 +53,13 @@ export const createRequest = async (req, res) => {
       });
     }
  
-    // create request
+    // create request with message
     const request = await Request.create({
       task_id: taskId,
       requester_id: userId,
       task_owner_id: task.user_id,
-      status: 0
+      status: 0,
+      message: message || ""
     });
 
         // notify requester and task owner via email
@@ -114,8 +116,8 @@ export const getReceivedRequests = async (req, res) => {
     const receivedRequests = await Request.find({
       task_owner_id: loggedInUserId
     })
-      .populate("requester_id", "name email")
-      .populate("task_id", "title description location reward")
+      .populate("requester_id", "first_name last_name profile_picture email_id")
+      .populate("task_id", "title description location start_time")
       .sort({ createdAt: -1 });
 
     return res.status(200).json({
@@ -140,8 +142,14 @@ export const getMyRequests = async (req, res) => {
     const loggedInUserId = req.user._id;
    
     const myRequests = await Request.find({ requester_id: loggedInUserId })
-      .populate("task_id", "title description reward location") // Get task details
-      .populate("task_owner_id", "name email") // Get task owner's details
+      .populate({
+        path: "task_id",
+        select: "title description location start_time user_id",
+        populate: {
+          path: "user_id",
+          select: "first_name last_name profile_picture email_id"
+        }
+      })
       .sort({ createdAt: -1 }); // Newest first
    
     return res.status(200).json({
@@ -266,6 +274,135 @@ export const updateRequestStatus = async (req, res) => {
     });
   } catch (error) {
     console.error("Update request status error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+/**
+ * Decline/Delete a request and create a notification for the requester
+ */
+export const declineRequest = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+    const userId = req.user._id;
+
+    // find request
+    const request = await Request.findById(requestId);
+    if (!request) {
+      return res.status(404).json({
+        success: false,
+        message: "Request not found"
+      });
+    }
+
+    // only task owner can decline
+    if (request.task_owner_id.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized"
+      });
+    }
+
+    // prevent re-processing
+    if (request.status !== 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Request already processed"
+      });
+    }
+
+    // get requester and task info for notification
+    const [requester, task] = await Promise.all([
+      User.findById(request.requester_id, { email_id: 1, first_name: 1 }),
+      Task.findById(request.task_id, { title: 1 })
+    ]);
+
+    // create notification for requester
+    try {
+      if (requester) {
+        await Notification.create({
+          user_id: request.requester_id.toString(),
+          body: `Your request for "${task?.title || "a task"}" was declined.`
+        });
+      }
+    } catch (e) {
+      console.log("Notification creation error (declineRequest):", e.message);
+    }
+
+    // send email notification
+    try {
+      if (requester?.email_id) {
+        await sendNotificationEmail(
+          requester.email_id,
+          "Task Request Declined",
+          `Hi ${requester.first_name || "there"}, your request for "${task?.title || "the task"}" was declined.`
+        );
+      }
+    } catch (e) {
+      console.log("Email notification error (declineRequest):", e.message);
+    }
+
+    // delete the request
+    await Request.findByIdAndDelete(requestId);
+
+    return res.json({
+      success: true,
+      message: "Request declined successfully"
+    });
+  } catch (error) {
+    console.error("Decline request error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+/**
+ * Cancel a request (Requester/Helper side)
+ */
+export const cancelRequest = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+    const userId = req.user._id;
+
+    // find request
+    const request = await Request.findById(requestId);
+    if (!request) {
+      return res.status(404).json({
+        success: false,
+        message: "Request not found"
+      });
+    }
+
+    // only requester can cancel their own request
+    if (request.requester_id.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized"
+      });
+    }
+
+    // prevent canceling already processed requests
+    if (request.status !== 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot cancel an already processed request"
+      });
+    }
+
+    // delete the request
+    await Request.findByIdAndDelete(requestId);
+
+    return res.json({
+      success: true,
+      message: "Request cancelled successfully"
+    });
+  } catch (error) {
+    console.error("Cancel request error:", error);
     return res.status(500).json({
       success: false,
       message: "Server error"
