@@ -1,5 +1,12 @@
 import React from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { 
+  getUserProfile, 
+  updateUserProfile, 
+  updateProfilePictureAndBio, 
+  removeProfilePicture 
+} from "../utils/api.js";
+import DeleteAccountButton from "../components/DeleteAccountButton.jsx"
 
 const ProfileSettings = () => {
   const [showPasswords, setShowPasswords] = React.useState({ 
@@ -7,41 +14,169 @@ const ProfileSettings = () => {
     new: false, 
     confirm: false 
   });
-  const [user, setUser] = React.useState(() => {
-    try { return JSON.parse(localStorage.getItem('user') || '{}'); } catch { return {}; }
-  });
+  const [user, setUser] = React.useState({});
+  const [loading, setLoading] = React.useState(true);
+  const [saving, setSaving] = React.useState(false);
+  const [error, setError] = React.useState("");
+  const [success, setSuccess] = React.useState("");
+  const [imageFile, setImageFile] = React.useState(null);
+
+  // Fetch user profile on component mount
+  React.useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setLoading(true);
+        const profile = await getUserProfile();
+        setUser(profile);
+      } catch (err) {
+        setError("Failed to load profile");
+        console.error("Error fetching profile:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const togglePassword = (field) => {
     setShowPasswords(prev => ({ ...prev, [field]: !prev[field] }));
   };
 
-  const handleInput = (key, value) => setUser(prev => ({ ...prev, [key]: value }));
+  const handleInput = (key, value) => {
+    setUser(prev => ({ ...prev, [key]: value }));
+    setError("");
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Image size must be less than 5MB");
+      return;
+    }
+
+    // Validate file type
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
+    if (!allowedTypes.includes(file.type)) {
+      setError("Only image files (JPEG, PNG, GIF) are allowed");
+      return;
+    }
+
+    setImageFile(file);
+
+    // Show preview
     const reader = new FileReader();
     reader.onload = () => {
-      handleInput('profile_picture', reader.result);
+      setUser(prev => ({ ...prev, profile_picture: reader.result }));
     };
     reader.readAsDataURL(file);
+    setError("");
   };
 
   const handleSave = async () => {
     try {
-      // Save to localStorage as a placeholder until backend update API is available
-      localStorage.setItem('user', JSON.stringify(user));
-      alert('Profile saved locally. Server sync will happen if backend endpoint is available.');
-    } catch (e) {
-      alert('Failed to save profile');
+      setSaving(true);
+      setError("");
+      setSuccess("");
+
+      // If there's an image file or bio change, use the multipart endpoint
+      if (imageFile || user.bio !== (await getUserProfile()).bio) {
+        const formData = new FormData();
+        
+        if (imageFile) {
+          formData.append("profile_picture", imageFile);
+        }
+        
+        if (user.bio !== undefined) {
+          formData.append("bio", user.bio || "");
+        }
+
+        const updatedUser = await updateProfilePictureAndBio(formData);
+        setUser(updatedUser);
+        setImageFile(null);
+        
+        // Update localStorage with new profile
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        setSuccess("Profile picture and bio saved successfully!");
+      }
+
+      // Update basic profile info if changed
+      const profileUpdates = {};
+      if (user.first_name !== undefined) profileUpdates.first_name = user.first_name;
+      if (user.last_name !== undefined) profileUpdates.last_name = user.last_name;
+      if (user.email_id !== undefined) profileUpdates.email_id = user.email_id;
+      if (user.phone_number !== undefined) profileUpdates.phone_number = user.phone_number;
+
+      if (Object.keys(profileUpdates).length > 0) {
+        const updatedUser = await updateUserProfile(profileUpdates);
+        setUser(updatedUser);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        setSuccess("Profile updated successfully!");
+      }
+
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err) {
+      setError(err.message || "Failed to save profile");
+      console.error("Error saving profile:", err);
+    } finally {
+      setSaving(false);
     }
   };
 
-  const handleRemovePicture = () => handleInput('profile_picture', '');
+  const handleRemovePicture = async () => {
+    try {
+      setSaving(true);
+      setError("");
+      setSuccess("");
+
+      const updatedUser = await removeProfilePicture();
+      setUser(updatedUser);
+      setImageFile(null);
+      
+      // Update localStorage
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setSuccess("Profile picture removed successfully!");
+      
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err) {
+      setError(err.message || "Failed to remove profile picture");
+      console.error("Error removing profile picture:", err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="p-6 lg:p-10 bg-transparent flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3D5A26] mx-auto"></div>
+          <p className="mt-4 text-[#5C7A44]">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 lg:p-10 bg-transparent">
       <div className="max-w-5xl space-y-6">
+        
+        {/* Error Alert */}
+        {error && (
+          <div className="bg-[#FFD9D9] border border-[#E85050] text-[#B91C1C] rounded-lg p-4">
+            {error}
+          </div>
+        )}
+
+        {/* Success Alert */}
+        {success && (
+          <div className="bg-[#D9FFC1] border border-[#A8E085] text-[#3A5B22] rounded-lg p-4">
+            {success}
+          </div>
+        )}
         
         {/* Section 1: Profile Picture */}
         <section className="bg-[#D9FFC1] border border-[#A8E085] rounded-xl p-6 shadow-sm">
@@ -62,11 +197,15 @@ const ProfileSettings = () => {
             </div>
             <div className="flex gap-3">
               <div className="flex gap-3">
-                <label className="bg-white text-[#1E293B] px-4 py-2 rounded-lg font-bold text-sm border border-gray-100 shadow-sm cursor-pointer">
+                <label className="bg-white text-[#1E293B] px-4 py-2 rounded-lg font-bold text-sm border border-gray-100 shadow-sm cursor-pointer hover:bg-gray-50 disabled:opacity-50" disabled={saving}>
                   Upload New Picture
-                  <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                  <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" disabled={saving} />
                 </label>
-                <button onClick={handleRemovePicture} className="bg-[#FFD9D9] text-[#B91C1C] px-4 py-2 rounded-lg font-bold text-sm">
+                <button 
+                  onClick={handleRemovePicture} 
+                  className="bg-[#FFD9D9] text-[#B91C1C] px-4 py-2 rounded-lg font-bold text-sm hover:bg-[#FFB3B3] disabled:opacity-50"
+                  disabled={saving || !user.profile_picture}
+                >
                   Remove
                 </button>
               </div>
@@ -84,7 +223,8 @@ const ProfileSettings = () => {
                 type="text" 
                 value={user.first_name || ''}
                 onChange={(e) => handleInput('first_name', e.target.value)}
-                className="w-full p-3 rounded-lg border border-gray-200 bg-white outline-none focus:ring-2 focus:ring-[#3A5B22]/20" 
+                disabled={saving}
+                className="w-full p-3 rounded-lg border border-gray-200 bg-white outline-none focus:ring-2 focus:ring-[#3A5B22]/20 disabled:opacity-50" 
               />
             </div>
             <div className="space-y-2">
@@ -93,7 +233,8 @@ const ProfileSettings = () => {
                 type="text" 
                 value={user.last_name || ''}
                 onChange={(e) => handleInput('last_name', e.target.value)}
-                className="w-full p-3 rounded-lg border border-gray-200 bg-white outline-none focus:ring-2 focus:ring-[#3A5B22]/20" 
+                disabled={saving}
+                className="w-full p-3 rounded-lg border border-gray-200 bg-white outline-none focus:ring-2 focus:ring-[#3A5B22]/20 disabled:opacity-50" 
               />
             </div>
             <div className="space-y-2">
@@ -102,7 +243,8 @@ const ProfileSettings = () => {
                 type="email" 
                 value={user.email_id || ''}
                 onChange={(e) => handleInput('email_id', e.target.value)}
-                className="w-full p-3 rounded-lg border border-gray-200 bg-white outline-none focus:ring-2 focus:ring-[#3A5B22]/20" 
+                disabled={saving}
+                className="w-full p-3 rounded-lg border border-gray-200 bg-white outline-none focus:ring-2 focus:ring-[#3A5B22]/20 disabled:opacity-50" 
               />
             </div>
             <div className="space-y-2">
@@ -111,7 +253,8 @@ const ProfileSettings = () => {
                 type="text" 
                 value={user.phone_number || ''}
                 onChange={(e) => handleInput('phone_number', e.target.value)}
-                className="w-full p-3 rounded-lg border border-gray-200 bg-white outline-none focus:ring-2 focus:ring-[#3A5B22]/20" 
+                disabled={saving}
+                className="w-full p-3 rounded-lg border border-gray-200 bg-white outline-none focus:ring-2 focus:ring-[#3A5B22]/20 disabled:opacity-50" 
               />
             </div>
           </div>
@@ -121,7 +264,8 @@ const ProfileSettings = () => {
               placeholder="e.g., Experienced handyman with a passion for home repairs..."
               value={user.bio || ''}
               onChange={(e) => handleInput('bio', e.target.value)}
-              className="w-full p-3 h-32 rounded-lg border border-gray-200 bg-white outline-none resize-none focus:ring-2 focus:ring-[#3A5B22]/20"
+              disabled={saving}
+              className="w-full p-3 h-32 rounded-lg border border-gray-200 bg-white outline-none resize-none focus:ring-2 focus:ring-[#3A5B22]/20 disabled:opacity-50"
             ></textarea>
           </div>
         </section>
@@ -130,12 +274,20 @@ const ProfileSettings = () => {
 
         {/* Footer Actions */}
         <div className="flex justify-end gap-4 pt-4 pb-10">
-          <button className="px-8 py-2.5 rounded-lg font-bold text-[#1E293B] bg-[#F1F5F9] border border-gray-100 shadow-sm transition-colors hover:bg-white">
+          <button 
+            className="px-8 py-2.5 rounded-lg font-bold text-[#1E293B] bg-[#F1F5F9] border border-gray-100 shadow-sm transition-colors hover:bg-white disabled:opacity-50"
+            disabled={saving}
+          >
             Cancel
           </button>
-          <button onClick={handleSave} className="px-8 py-2.5 rounded-lg font-bold text-white bg-[#3D5A26] shadow-md transition-colors hover:bg-[#2A3F1A]">
-            Save Changes
+          <button 
+            onClick={handleSave} 
+            className="px-8 py-2.5 rounded-lg font-bold text-white bg-[#3D5A26] shadow-md transition-colors hover:bg-[#2A3F1A] disabled:opacity-50"
+            disabled={saving}
+          >
+            {saving ? "Saving..." : "Save Changes"}
           </button>
+          <DeleteAccountButton></DeleteAccountButton>
         </div>
       </div>
     </div>
