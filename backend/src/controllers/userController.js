@@ -1,4 +1,7 @@
 import User from "../models/User.js";
+import Task from "../models/Task.js";
+import Request from "../models/Request.js";
+import Notification from "../models/Notification.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -222,7 +225,7 @@ export const removeProfilePicture = async (req, res) => {
   }
 };
 /**
- * @desc    Delete logged-in user's account
+ * @desc    Delete logged-in user's account and all related data
  * @route   DELETE /api/user/delete-account
  * @access  Private
  */
@@ -245,7 +248,7 @@ export const deleteMyAccount = async (req, res) => {
       });
     }
 
-    // Safe file cleanup
+    // Delete profile picture file if it exists
     try {
       if (
         user.profile_picture &&
@@ -260,17 +263,50 @@ export const deleteMyAccount = async (req, res) => {
       console.warn("File cleanup skipped:", err.message);
     }
 
+    // Delete all tasks created by this user
+    const userTasks = await Task.find({ user_id: mongoUserId });
+    const taskIds = userTasks.map(t => t._id);
+    
+    if (taskIds.length > 0) {
+      // Delete all requests related to these tasks
+      await Request.deleteMany({ task_id: { $in: taskIds } });
+      
+      // Delete task pictures from uploads
+      for (const task of userTasks) {
+        try {
+          if (task.picture && task.picture.startsWith("uploads/tasks/")) {
+            const filePath = path.join(__dirname, "../../", task.picture);
+            if (fs.existsSync(filePath)) {
+              fs.unlinkSync(filePath);
+            }
+          }
+        } catch (err) {
+          console.warn("Task file cleanup skipped:", err.message);
+        }
+      }
+      
+      // Delete the tasks
+      await Task.deleteMany({ user_id: mongoUserId });
+    }
+
+    // Delete all requests where user is the requester
+    await Request.deleteMany({ requester_id: mongoUserId });
+
+    // Delete all notifications for this user
+    await Notification.deleteMany({ user_id: mongoUserId.toString() });
+
+    // Delete the user account
     await User.findByIdAndDelete(mongoUserId);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: "Account deleted successfully",
+      message: "Account and all associated data deleted successfully",
     });
   } catch (error) {
     console.error("DELETE ACCOUNT ERROR:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      message: "Delete failed",
+      message: "Failed to delete account",
       error: error.message,
     });
   }
