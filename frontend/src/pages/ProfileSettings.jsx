@@ -6,6 +6,7 @@ import {
   updateProfilePictureAndBio, 
   removeProfilePicture 
 } from "../utils/api.js";
+import DeleteAccountButton from "../components/DeleteAccountButton.jsx"
 
 const ProfileSettings = () => {
   const [showPasswords, setShowPasswords] = React.useState({ 
@@ -286,6 +287,7 @@ const ProfileSettings = () => {
           >
             {saving ? "Saving..." : "Save Changes"}
           </button>
+          <DeleteAccountButton></DeleteAccountButton>
         </div>
       </div>
     </div>

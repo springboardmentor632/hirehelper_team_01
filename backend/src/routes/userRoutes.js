@@ -4,7 +4,7 @@ import {
   getUserProfile,
   updateUserProfile,
   updateProfilePictureAndBio,
-  removeProfilePicture,
+  removeProfilePicture, deleteMyAccount
 } from "../controllers/userController.js";
 import { requireAuth } from "../middleware/auth.js";
 import upload from "../config/multer.js";
@@ -20,5 +20,9 @@ router.put(
   updateProfilePictureAndBio
 );
 router.delete("/remove-profile-picture", requireAuth, removeProfilePicture);
- 
+router.delete(
+  "/delete-account",
+  requireAuth,
+  deleteMyAccount
+);
 export default router;

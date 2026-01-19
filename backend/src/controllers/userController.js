@@ -15,19 +15,19 @@ export const getUserProfile = async (req, res) => {
   try {
     //Get MongoDB _id from auth middleware
     const mongoUserId = req.user._id;
- 
+
     //Find user using MongoDB _id
     const user = await User.findById(mongoUserId).select(
       "-password -otp -__v"
     );
- 
+
     if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
- 
+
     res.status(200).json({
       success: true,
       user,
@@ -39,7 +39,7 @@ export const getUserProfile = async (req, res) => {
     });
   }
 };
- 
+
 /**
  * @desc    Update logged-in user's profile
  * @route   PUT /api/user/update-profile
@@ -48,21 +48,21 @@ export const getUserProfile = async (req, res) => {
 export const updateUserProfile = async (req, res) => {
   try {
     const { first_name, last_name, email_id, phone_number } = req.body;
- 
+
     if (!first_name && !last_name && !email_id && !phone_number) {
       return res.status(400).json({
         success: false,
         message: "At least one field is required to update",
       });
     }
- 
+
     //Check email uniqueness (exclude current user by _id)
     if (email_id) {
       const existingUser = await User.findOne({
         email_id,
         _id: { $ne: req.user._id },
       });
- 
+
       if (existingUser) {
         return res.status(400).json({
           success: false,
@@ -70,7 +70,7 @@ export const updateUserProfile = async (req, res) => {
         });
       }
     }
- 
+
     //Update profile
     const updatedUser = await User.findByIdAndUpdate(
       req.user._id,
@@ -84,7 +84,7 @@ export const updateUserProfile = async (req, res) => {
       },
       { new: true }
     ).select("-password -otp -__v");
- 
+
     res.status(200).json({
       success: true,
       message: "Profile updated successfully",
@@ -107,7 +107,7 @@ export const updateProfilePictureAndBio = async (req, res) => {
   try {
     const mongoUserId = req.user._id;
     const { bio } = req.body;
-    
+
     // Find current user to get old profile picture path
     const currentUser = await User.findById(mongoUserId);
     if (!currentUser) {
@@ -221,4 +221,57 @@ export const removeProfilePicture = async (req, res) => {
     });
   }
 };
- 
+/**
+ * @desc    Delete logged-in user's account
+ * @route   DELETE /api/user/delete-account
+ * @access  Private
+ */
+export const deleteMyAccount = async (req, res) => {
+  try {
+    const mongoUserId = req.user._id;
+
+    if (!mongoUserId) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user identity",
+      });
+    }
+
+    const user = await User.findById(mongoUserId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Safe file cleanup
+    try {
+      if (
+        user.profile_picture &&
+        user.profile_picture.startsWith("uploads/profile/")
+      ) {
+        const filePath = path.join(__dirname, "../../", user.profile_picture);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
+    } catch (err) {
+      console.warn("File cleanup skipped:", err.message);
+    }
+
+    await User.findByIdAndDelete(mongoUserId);
+
+    res.status(200).json({
+      success: true,
+      message: "Account deleted successfully",
+    });
+  } catch (error) {
+    console.error("DELETE ACCOUNT ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: "Delete failed",
+      error: error.message,
+    });
+  }
+};
