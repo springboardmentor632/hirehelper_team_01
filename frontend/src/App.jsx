@@ -13,7 +13,7 @@ import Loader from "./pages/Loader";
 import Requests from "./pages/Requests";
 import MyRequests from "./pages/MyRequests";
 import ProfileSettings from "./pages/ProfileSettings";
-import EditTask from "./pages/EditTask";
+import EditTask from "./pages/editTask";
 
 // Components & Helpers
 import Layout from "./components/Layout";

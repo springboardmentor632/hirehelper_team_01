@@ -54,10 +54,7 @@ const MyTasks = () => {
   if (!myTasks.length) {
     return (
       <div className="p-6 lg:p-10 min-h-screen bg-bg-app">
-        <h1 className="text-2xl font-bold text-text-primary mb-6">
-          My Tasks
-        </h1>
-
+        
         <div className="flex flex-col items-center justify-center py-20 bg-bg-highlight rounded-xl border-2 border-dashed border-action-accept">
           <div className="text-5xl mb-4">📝</div>
           <h2 className="text-xl font-semibold text-text-primary mb-2">
@@ -80,9 +77,7 @@ const MyTasks = () => {
   // NORMAL TASK LIST
   return (
     <div className="p-6 lg:p-10 min-h-screen bg-bg-app">
-      <h1 className="text-2xl font-bold text-text-primary mb-6">
-        My Tasks
-      </h1>
+      
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {myTasks.map((task) => (

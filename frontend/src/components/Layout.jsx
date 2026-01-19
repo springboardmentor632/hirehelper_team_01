@@ -17,6 +17,7 @@ const Layout = () => {
             case '/requests': return { title: 'Requests', desc: 'Accept or decline requests to help with your tasks' };
             case '/myrequests': return { title: 'My Requests', desc: 'Track your sent requests.' };
             case '/settings': return { title: 'Settings', desc: 'Manage your account preferences.' };
+            case '/edit-task/:taskId': return { title: 'Update Task', desc: 'Modify the details below to update your task.' };
             default: return { title: 'HireHelper', desc: '' };
         }
     };
